@@ -1,0 +1,290 @@
+---
+/**
+ * LOCAL — tudo vem de src/config/event.ts → venue.
+ * Campos vazios aparecem como "A definir". Com `mapEmbedUrl`, o mapa
+ * (iframe) substitui a imagem ilustrativa e só carrega perto da tela.
+ */
+import { Image } from 'astro:assets';
+import venueImg from '@/assets/venue/local-placeholder.jpg';
+import { event, display } from '@/config/event';
+
+const v = event.venue;
+const confirmed = Boolean(v.name);
+const rows = [
+  { label: 'Endereço', value: [v.address, v.neighborhood, v.postalCode].filter(Boolean).join(' · ') },
+  { label: 'Como chegar', value: v.howToGetThere },
+  { label: 'Transporte público', value: v.publicTransport },
+  { label: 'Estacionamento', value: v.parking },
+  { label: 'Informações importantes', value: v.importantInfo },
+];
+---
+
+<section class="venue section" id="local" aria-labelledby="local-title">
+  <div class="container">
+    <header class="venue__head">
+      <p class="kicker" data-reveal="fade">Local</p>
+      <h2 id="local-title" class="venue__title" data-reveal="mask">
+        <span class="line"><span>Onde o Rio</span></span>
+        <span class="line" style="--l:1"><span class="text-gradient">vai virar.</span></span>
+      </h2>
+    </header>
+
+    <div class="venue__grid">
+      <div class="venue__visual" data-reveal="scale">
+        {
+          v.mapEmbedUrl ? (
+            <iframe
+              class="venue__map"
+              src={v.mapEmbedUrl}
+              title={`Mapa: ${v.name || 'local do evento'}`}
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            />
+          ) : (
+            <>
+              <Image src={venueImg} alt="" widths={[640, 1024, 1600]} sizes="(max-width: 900px) 100vw, 55vw" loading="lazy" class="venue__img" />
+              <svg class="venue__oval" viewBox="0 0 400 260" aria-hidden="true">
+                <ellipse cx="200" cy="130" rx="180" ry="110" pathLength="1" />
+                <ellipse cx="200" cy="130" rx="130" ry="75" pathLength="1" />
+                <ellipse cx="200" cy="130" rx="78" ry="42" pathLength="1" />
+                <circle cx="200" cy="130" r="6" />
+              </svg>
+            </>
+          )
+        }
+        <div class="venue__label">
+          <p class="venue__name">
+            {confirmed ? v.name : <span>Local</span>}
+            {!confirmed && <span class="venue__stamp">A definir</span>}
+          </p>
+          <p class="venue__city">
+            {event.city} · {event.state}
+            <span aria-hidden="true"> · 22°54′S 43°12′W</span>
+          </p>
+        </div>
+        {!v.mapEmbedUrl && <p class="venue__soon placeholder-note">Mapa em breve</p>}
+      </div>
+
+      <dl class="venue__list">
+        {
+          rows.map((r, i) => (
+            <div class="venue__row" data-reveal style={`--i:${i}`}>
+              <dt>{r.label}</dt>
+              <dd class:list={{ tbd: !r.value }}>{display(r.value)}</dd>
+            </div>
+          ))
+        }
+        {
+          v.mapUrl && (
+            <div class="venue__row">
+              <dt>Mapa</dt>
+              <dd>
+                <a href={v.mapUrl} target="_blank" rel="noopener noreferrer">
+                  Abrir no mapa<span class="sr-only"> (abre em nova aba)</span>
+                </a>
+              </dd>
+            </div>
+          )
+        }
+      </dl>
+    </div>
+  </div>
+</section>
+
+<style>
+  .venue {
+    background:
+      radial-gradient(50% 50% at 90% 60%, rgb(255 46 136 / 0.12), transparent 70%),
+      var(--color-background);
+  }
+
+  .venue__head {
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .venue__title {
+    margin-top: 1.25rem;
+    font-size: var(--fs-h1);
+    font-weight: 900;
+  }
+
+  .venue__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 5rem);
+    align-items: start;
+  }
+
+  .venue__visual {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--color-surface);
+    clip-path: polygon(0 0, calc(100% - 2.5rem) 0, 100% 2.5rem, 100% 100%, 2.5rem 100%, 0 calc(100% - 2.5rem));
+  }
+
+  .venue__visual :global(.venue__img),
+  .venue__map {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 0;
+  }
+
+  .venue__visual::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgb(7 6 12 / 0.95), rgb(7 6 12 / 0.15) 60%);
+    pointer-events: none;
+  }
+
+  .venue__oval {
+    position: absolute;
+    inset: 8% 10% 22%;
+    z-index: 1;
+    width: 80%;
+    height: 70%;
+    fill: none;
+    stroke: var(--color-text);
+    stroke-width: 1.25;
+  }
+
+  .venue__oval ellipse {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+    opacity: 0.7;
+  }
+
+  .venue__oval circle {
+    fill: var(--color-primary);
+    stroke: none;
+    filter: drop-shadow(0 0 8px var(--color-primary));
+    animation: pulse 1.6s ease-in-out infinite alternate;
+  }
+
+  @keyframes pulse {
+    to {
+      opacity: 0.35;
+    }
+  }
+
+  /* As elipses se desenham ao entrar na tela */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .venue__oval ellipse {
+      stroke-dashoffset: 1;
+      transition: stroke-dashoffset 2.2s var(--ease-out);
+    }
+
+    :global(.js) .venue__oval ellipse:nth-child(2) {
+      transition-delay: 0.25s;
+    }
+
+    :global(.js) .venue__oval ellipse:nth-child(3) {
+      transition-delay: 0.5s;
+    }
+
+    :global(.is-in) .venue__oval ellipse {
+      stroke-dashoffset: 0 !important;
+    }
+  }
+
+  .venue__label {
+    position: absolute;
+    left: clamp(1.25rem, 3vw, 2.25rem);
+    right: clamp(1.25rem, 3vw, 2.25rem);
+    bottom: clamp(1.25rem, 3vw, 2.25rem);
+    z-index: 2;
+  }
+
+  .venue__name {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 7vw, 6.5rem);
+    font-weight: 900;
+    line-height: 0.85;
+    text-transform: uppercase;
+  }
+
+  .venue__stamp {
+    padding: 0.2em 0.35em 0.12em;
+    font-size: 0.42em;
+    line-height: 1;
+    color: var(--color-ink);
+    background: var(--color-accent);
+    rotate: -3deg;
+  }
+
+  .venue__city {
+    margin-top: 0.75rem;
+    font-size: var(--fs-caption);
+    font-weight: 800;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .venue__soon {
+    position: absolute;
+    top: 1.25rem;
+    left: 1.25rem;
+    z-index: 2;
+    padding: 0.4rem 0.75rem;
+    background: rgb(7 6 12 / 0.7);
+  }
+
+  /* ---------- Lista de informações ------------------------------------- */
+  .venue__list {
+    display: grid;
+    border-top: 1px solid var(--color-line);
+  }
+
+  .venue__row {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+    gap: 1rem;
+    padding-block: 1.35rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .venue__row dt {
+    font-size: var(--fs-caption);
+    font-weight: 800;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .venue__row dd {
+    font-family: var(--font-display);
+    font-size: clamp(1.35rem, 2vw, 1.75rem);
+    font-weight: 800;
+    line-height: 1.1;
+    text-transform: uppercase;
+  }
+
+  .venue__row dd.tbd {
+    color: var(--color-muted);
+  }
+
+  @media (max-width: 900px) {
+    .venue__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .venue__visual {
+      aspect-ratio: 1 / 1.05;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .venue__oval circle {
+      animation: none;
+    }
+  }
+</style>

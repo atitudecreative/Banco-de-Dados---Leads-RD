@@ -1,0 +1,271 @@
+---
+/**
+ * GALERIA — composição editorial assimétrica.
+ * ⚠️ As imagens atuais são ILUSTRATIVAS (geradas por scripts/generate-placeholders.mjs).
+ * Para usar fotos reais: substitua os arquivos em src/assets/gallery/
+ * (mesmos nomes) ou edite a lista `shots` abaixo, e marque
+ * `isPlaceholder = false` para remover o aviso.
+ */
+import { Image } from 'astro:assets';
+import Button from '@/components/ui/Button.astro';
+import { event, primaryHref, primaryIsExternal } from '@/config/event';
+import g1 from '@/assets/gallery/atmosfera-01.jpg';
+import g2 from '@/assets/gallery/atmosfera-02.jpg';
+import g3 from '@/assets/gallery/atmosfera-03.jpg';
+import g4 from '@/assets/gallery/atmosfera-04.jpg';
+import g5 from '@/assets/gallery/atmosfera-05.jpg';
+import g6 from '@/assets/gallery/atmosfera-06.jpg';
+
+const isPlaceholder = true; // TODO: false quando houver fotos oficiais
+
+const shots = [
+  { src: g1, alt: 'Imagem ilustrativa: multidão de braços erguidos sob luzes de palco azuis e magenta', caption: 'Louvor', area: 'a', speed: -6 },
+  { src: g2, alt: 'Imagem ilustrativa: canhões de luz dourados e magenta sobre o público', caption: 'Celebração', area: 'b', speed: 4 },
+  { src: g3, alt: 'Imagem ilustrativa: luzes azuis e ciano sobre a plateia', caption: 'Comunhão', area: 'c', speed: -3 },
+  { src: g4, alt: 'Imagem ilustrativa: brilhos dourados no céu acima da multidão', caption: 'Virada', area: 'd', speed: 7 },
+  { src: g5, alt: 'Imagem ilustrativa: palco iluminado e público ao fundo', caption: 'Multidão', area: 'e', speed: -4 },
+  { src: g6, alt: 'Imagem ilustrativa: público com luzes de celular acesas', caption: 'Oração', area: 'f', speed: 5 },
+];
+const prev = event.previousEdition;
+---
+
+<section class="gallery section" id="galeria" aria-labelledby="galeria-title">
+  <div class="container">
+    <header class="gallery__head">
+      <div>
+        <p class="kicker" data-reveal="fade">Galeria</p>
+        <h2 id="galeria-title" class="gallery__title" data-reveal="mask">
+          <span class="line"><span>Olha o que</span></span>
+          <span class="line" style="--l:1"><span class="text-outline">aconteceu.</span></span>
+        </h2>
+      </div>
+      <div class="gallery__intro" data-reveal>
+        {
+          prev ? (
+            <p>
+              Em {prev.year}, o {prev.venue} virou o ano em adoração. A primeira virada já foi história. <strong>A próxima tem o seu lugar.</strong>
+            </p>
+          ) : (
+            <p>
+              Uma multidão, uma só voz, um ano inteiro começando do jeito certo. <strong>A próxima virada tem o seu lugar.</strong>
+            </p>
+          )
+        }
+        {isPlaceholder && <p class="placeholder-note">Imagens ilustrativas · fotos oficiais em breve</p>}
+      </div>
+    </header>
+
+    <ul class="grid" role="list">
+      {
+        shots.map((s, i) => (
+          <li class="shot" style={`grid-area:${s.area};--speed:${s.speed}`} data-reveal="fade">
+            <figure>
+              <div class="shot__frame">
+                <Image
+                  src={s.src}
+                  alt={s.alt}
+                  widths={[480, 800, 1200]}
+                  sizes="(max-width: 760px) 50vw, 40vw"
+                  loading="lazy"
+                  decoding="async"
+                  class="shot__img"
+                />
+              </div>
+              <figcaption>
+                <span>{String(i + 1).padStart(2, '0')}</span>
+                {s.caption}
+              </figcaption>
+            </figure>
+          </li>
+        ))
+      }
+      <li class="grid__quote" style="grid-area:q" data-reveal>
+        <p>
+          Você precisa estar <span class="text-gradient">na próxima.</span>
+        </p>
+        <Button href={primaryHref} external={primaryIsExternal} data-track="cta-galeria">Quero ir</Button>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .gallery__head {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    align-items: end;
+    gap: 2rem 4rem;
+    margin-bottom: clamp(3rem, 6vw, 5rem);
+  }
+
+  .gallery__title {
+    margin-top: 1.25rem;
+    font-size: var(--fs-h1);
+    font-weight: 900;
+  }
+
+  .gallery__intro {
+    display: grid;
+    gap: 1rem;
+    font-size: var(--fs-lead);
+    line-height: 1.45;
+    color: var(--color-muted);
+  }
+
+  .gallery__intro strong {
+    color: var(--color-text);
+  }
+
+  /* ---------- Grid editorial ------------------------------------------ */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-areas:
+      'a a a a a b b b b b b b'
+      'a a a a a c c c d d d d'
+      'q q q q q c c c d d d d'
+      'e e e e e e e f f f f .';
+    gap: clamp(0.75rem, 1.6vw, 1.5rem);
+  }
+
+  .shot figure {
+    display: grid;
+    gap: 0.6rem;
+    height: 100%;
+  }
+
+  .shot__frame {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-surface);
+  }
+
+  .shot:nth-child(1) .shot__frame {
+    aspect-ratio: 4 / 5;
+  }
+
+  .shot:nth-child(2) .shot__frame {
+    aspect-ratio: 16 / 9;
+  }
+
+  .shot:nth-child(3) .shot__frame,
+  .shot:nth-child(4) .shot__frame {
+    aspect-ratio: 3 / 4;
+  }
+
+  .shot:nth-child(5) .shot__frame {
+    aspect-ratio: 16 / 10;
+  }
+
+  .shot:nth-child(6) .shot__frame {
+    aspect-ratio: 4 / 5;
+  }
+
+  .shot__frame :global(.shot__img) {
+    position: absolute;
+    inset: -8% 0;
+    width: 100%;
+    height: 116%;
+    object-fit: cover;
+    transition:
+      transform 1.2s var(--ease-out),
+      filter var(--dur) var(--ease-out);
+  }
+
+  @media (hover: hover) {
+    .shot:hover .shot__frame :global(.shot__img) {
+      transform: scale(1.06);
+      filter: saturate(1.25);
+    }
+  }
+
+  /* Parallax por imagem, só CSS */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .shot__frame {
+        animation: drift linear both;
+        animation-timeline: view();
+      }
+    }
+  }
+
+  @keyframes drift {
+    from {
+      translate: 0 calc(var(--speed) * 6px);
+    }
+    to {
+      translate: 0 calc(var(--speed) * -6px);
+    }
+  }
+
+  figcaption {
+    display: flex;
+    gap: 0.75rem;
+    font-size: var(--fs-caption);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  figcaption span {
+    color: var(--color-accent);
+  }
+
+  .grid__quote {
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: 1.75rem;
+    padding: clamp(1.5rem, 3vw, 3rem) 0;
+  }
+
+  .grid__quote p {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5vw, 5rem);
+    font-weight: 900;
+    line-height: 0.9;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 900px) {
+    .gallery__head {
+      grid-template-columns: 1fr;
+    }
+
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-areas:
+        'a a'
+        'b c'
+        'q q'
+        'd d'
+        'e f';
+      row-gap: 1.25rem;
+    }
+
+    .shot:nth-child(1) .shot__frame,
+    .shot:nth-child(4) .shot__frame {
+      aspect-ratio: 16 / 11;
+    }
+
+    .shot:nth-child(2) .shot__frame,
+    .shot:nth-child(3) .shot__frame,
+    .shot:nth-child(5) .shot__frame,
+    .shot:nth-child(6) .shot__frame {
+      aspect-ratio: 1;
+    }
+
+    .shot__frame {
+      animation: none !important;
+    }
+
+    .grid__quote :global(.btn) {
+      width: 100%;
+    }
+
+    .grid__quote {
+      justify-items: stretch;
+    }
+  }
+</style>

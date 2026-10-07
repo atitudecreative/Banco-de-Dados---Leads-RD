@@ -1,0 +1,233 @@
+---
+/**
+ * LINEUP — apresentação estilo cartaz de festival.
+ * Dados: src/config/event.ts → artists. Para anunciar um nome, edite o
+ * artista lá e marque `confirmed: true`. Nada é inventado aqui.
+ */
+import ArtistCard from '@/components/ui/ArtistCard.astro';
+import Button from '@/components/ui/Button.astro';
+import SectionTitle from '@/components/ui/SectionTitle.astro';
+import { event, hasConfirmedArtists } from '@/config/event';
+
+const tiers = [1, 2, 3] as const;
+const byTier = tiers.map((t) => event.artists.filter((a) => a.tier === t)).filter((list) => list.length);
+---
+
+<section class="lineup section" id="atracoes" aria-labelledby="atracoes-title" data-lineup>
+  <div class="container">
+    <div class="lineup__head">
+      <SectionTitle id="atracoes-title" kicker="Atrações" lines={['O lineup', 'da virada']} accent={[1]} />
+      {
+        !hasConfirmedArtists && (
+          <div class="stamp" aria-hidden="true">
+            <svg viewBox="0 0 200 200">
+              <defs>
+                <path id="stamp-circle" d="M100 100m-78 0a78 78 0 1 1 156 0a78 78 0 1 1-156 0" />
+              </defs>
+              <text>
+                <textPath href="#stamp-circle" textLength="488" lengthAdjust="spacing">ANÚNCIO EM BREVE ✦ ANÚNCIO EM BREVE ✦</textPath>
+              </text>
+            </svg>
+            <span class="stamp__core">?</span>
+          </div>
+        )
+      }
+    </div>
+
+    {
+      !hasConfirmedArtists && (
+        <p class="lineup__note placeholder-note" data-reveal="fade">
+          Os nomes do MaraVira {event.eventYear} serão anunciados em breve. Abaixo, as posições do cartaz.
+        </p>
+      )
+    }
+
+    <ol class="poster" role="list">
+      {
+        byTier.map((artists, ti) => (
+          <li class:list={['poster__row', `poster__row--t${artists[0].tier}`]} data-reveal style={`--i:${ti}`}>
+            <ul role="list" class="poster__names">
+              {artists.map((a) => (
+                <li>
+                  <ArtistCard artist={a} />
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="lineup__cta" data-reveal>
+      <p>Quer saber primeiro quem vai estar no palco?</p>
+      <Button href="#garanta" variant="light" data-track="cta-lineup">Quero ser avisado</Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .lineup {
+    overflow: hidden;
+    background:
+      radial-gradient(45% 40% at 10% 30%, rgb(59 43 255 / 0.2), transparent 70%),
+      var(--color-background);
+  }
+
+  .lineup__head {
+    position: relative;
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .lineup__head :global(.st__title) {
+    font-size: var(--fs-h1);
+  }
+
+  .lineup__note {
+    margin: -2rem 0 2.5rem;
+  }
+
+  /* Selo giratório "anúncio em breve" */
+  .stamp {
+    position: relative;
+    flex: none;
+    width: clamp(7rem, 14vw, 12rem);
+    aspect-ratio: 1;
+    color: var(--color-accent);
+  }
+
+  .stamp svg {
+    width: 100%;
+    height: 100%;
+    animation: spin 18s linear infinite;
+  }
+
+  .stamp text {
+    font-family: var(--font-body);
+    font-size: 17.5px;
+    font-weight: 800;
+    letter-spacing: 3.1px;
+    fill: currentColor;
+  }
+
+  .stamp__core {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 900;
+    color: var(--color-text);
+  }
+
+  @keyframes spin {
+    to {
+      rotate: 360deg;
+    }
+  }
+
+  /* ---------- Cartaz --------------------------------------------------- */
+  .poster {
+    display: grid;
+    border-top: 1px solid var(--color-line);
+  }
+
+  .poster__row {
+    padding-block: clamp(1.25rem, 2.5vw, 2rem);
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .poster__names {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.1em 0.45em;
+  }
+
+  .poster__names > li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.45em;
+  }
+
+  /* estrela separadora entre nomes */
+  .poster__names > li + li::before {
+    content: '✦';
+    font-size: 0.32em;
+    line-height: 1;
+    color: var(--color-primary);
+    align-self: center;
+    margin-right: 0.15em;
+  }
+
+  .poster__row--t1 {
+    font-size: clamp(2.75rem, 7.6vw, 8rem);
+  }
+
+  .poster__row--t2 {
+    font-size: clamp(2rem, 4.6vw, 4.75rem);
+  }
+
+  .poster__row--t3 {
+    font-size: clamp(1.5rem, 3vw, 3rem);
+  }
+
+  .lineup__cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .lineup__cta p {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 3vw, 2.5rem);
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 640px) {
+    .lineup__head {
+      flex-direction: column-reverse;
+      gap: 0;
+    }
+
+    .stamp {
+      position: absolute;
+      top: -1.5rem;
+      right: 0;
+      width: 6.5rem;
+    }
+
+    .lineup__note {
+      margin-top: -1.5rem;
+    }
+
+    .poster__names {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.15em;
+    }
+
+    .poster__names > li + li::before {
+      display: none;
+    }
+
+    .lineup__cta :global(.btn) {
+      width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stamp svg {
+      animation: none;
+    }
+  }
+</style>

@@ -1,0 +1,340 @@
+---
+/**
+ * CTA PRINCIPAL — "Garanta seu lugar".
+ * - Com `ticketUrl` configurado: botão gigante para a inscrição oficial.
+ * - Sem `ticketUrl`: lista de espera (lead) integrada ao RD Station
+ *   (src/scripts/lead-form.ts). Sem token RD configurado, o formulário
+ *   aparece desativado com aviso "em breve" — nenhum dado é perdido.
+ */
+import Button from '@/components/ui/Button.astro';
+import { event, dateParts, socialList } from '@/config/event';
+
+const formEnabled = Boolean(event.leads.rdPublicToken);
+const isDev = import.meta.env.DEV;
+const firstSocial = socialList.find((s) => s.url);
+---
+
+<section class="cta section" id="garanta" aria-labelledby="garanta-title">
+  <div class="cta__glow" aria-hidden="true"></div>
+  <div class="container cta__grid">
+    <div class="cta__copy">
+      <p class="kicker" data-reveal="fade">{dateParts.long} · {event.city}</p>
+      <h2 id="garanta-title" class="cta__title" data-reveal="mask">
+        <span class="line"><span>Garanta</span></span>
+        <span class="line" style="--l:1"><span>seu</span></span>
+        <span class="line" style="--l:2"><span class="text-gradient">lugar.</span></span>
+      </h2>
+      <p class="cta__lead" data-reveal>
+        {
+          event.ticketUrl
+            ? 'As inscrições estão abertas. Garanta o seu lugar na virada mais esperada do Rio.'
+            : 'As inscrições ainda não abriram. Entre na lista e seja o primeiro a saber do lineup, do local e da abertura das inscrições.'
+        }
+      </p>
+    </div>
+
+    {
+      event.ticketUrl ? (
+        <div class="cta__panel" data-reveal="scale">
+          <Button href={event.ticketUrl} external size="lg" data-track="cta-inscricao">
+            Quero viver o MaraVira
+          </Button>
+        </div>
+      ) : (
+        <form
+          class="lead"
+          data-lead-form
+          data-token={event.leads.rdPublicToken}
+          data-conversion={event.leads.conversionIdentifier}
+          novalidate
+          data-reveal="scale">
+          <fieldset disabled={!formEnabled}>
+            <legend class="lead__legend">Lista de espera MaraVira {event.eventYear}</legend>
+
+            <div class="field">
+              <input id="lead-name" name="name" type="text" autocomplete="name" required placeholder=" " />
+              <label for="lead-name">Seu nome</label>
+            </div>
+            <div class="field">
+              <input id="lead-email" name="email" type="email" autocomplete="email" inputmode="email" required placeholder=" " />
+              <label for="lead-email">Seu melhor e-mail</label>
+            </div>
+            <div class="field">
+              <input id="lead-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder=" " />
+              <label for="lead-phone">
+                WhatsApp <span>(opcional)</span>
+              </label>
+            </div>
+
+            <!-- honeypot anti-spam: invisível para pessoas -->
+            <div class="lead__hp" aria-hidden="true">
+              <label for="lead-company">Empresa</label>
+              <input id="lead-company" name="company" type="text" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <label class="consent">
+              <input type="checkbox" name="consent" required />
+              <span class="consent__box" aria-hidden="true" />
+              <span>
+                Aceito receber comunicações sobre o MaraVira e concordo com a <a href="/privacidade">Política de Privacidade</a>.
+              </span>
+            </label>
+
+            <Button type="submit" size="lg" class="lead__submit" data-track="cta-lead">
+              Quero viver o MaraVira
+            </Button>
+          </fieldset>
+
+          <p class="lead__status" role="status" aria-live="polite" data-lead-status>
+            {!formEnabled && (
+              <>
+                A lista de espera abre em breve.
+                {firstSocial ? (
+                  <>
+                    {' '}
+                    Enquanto isso, siga o MaraVira no <a href={firstSocial.url}>{firstSocial.label}</a>.
+                  </>
+                ) : (
+                  ' Enquanto isso, acompanhe as redes oficiais.'
+                )}
+              </>
+            )}
+          </p>
+          {isDev && !formEnabled && <p class="lead__dev">[DEV] Configure leads.rdPublicToken em src/config/event.ts para ativar o formulário.</p>}
+        </form>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .cta {
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .cta__glow {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(45% 55% at 15% 70%, rgb(59 43 255 / 0.45), transparent 70%),
+      radial-gradient(40% 50% at 60% 30%, rgb(255 46 136 / 0.35), transparent 70%),
+      radial-gradient(35% 45% at 95% 90%, rgb(255 178 63 / 0.3), transparent 70%);
+  }
+
+  .cta__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(2.5rem, 6vw, 6rem);
+  }
+
+  .cta__title {
+    margin-top: 1.25rem;
+    font-size: clamp(4rem, 12vw, 11rem);
+    font-weight: 900;
+    line-height: 0.82;
+  }
+
+  .cta__lead {
+    max-width: 30rem;
+    margin-top: 1.75rem;
+    font-size: var(--fs-lead);
+    line-height: 1.45;
+    color: var(--color-text);
+    opacity: 0.88;
+  }
+
+  .cta__panel :global(.btn) {
+    width: 100%;
+  }
+
+  /* ---------- Formulário ---------------------------------------------- */
+  .lead {
+    padding: clamp(1.5rem, 3.5vw, 3rem);
+    background: rgb(16 14 26 / 0.75);
+    border: 1px solid var(--color-line);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .lead fieldset {
+    display: grid;
+    gap: 1.1rem;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .lead fieldset[disabled] > :not(legend) {
+    opacity: 0.5;
+  }
+
+  .lead__legend {
+    margin-bottom: 0.5rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  /* Campo com rótulo flutuante */
+  .field {
+    position: relative;
+  }
+
+  .field input {
+    width: 100%;
+    height: 3.75rem;
+    padding: 1.4rem 1rem 0.45rem;
+    font-size: 1rem;
+    background: rgb(246 243 238 / 0.04);
+    border: 0;
+    border-bottom: 2px solid var(--color-line);
+    border-radius: var(--radius) var(--radius) 0 0;
+    transition:
+      border-color var(--dur) var(--ease-out),
+      background-color var(--dur) var(--ease-out);
+  }
+
+  .field input:hover {
+    background: rgb(246 243 238 / 0.07);
+  }
+
+  .field input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    background: rgb(246 243 238 / 0.08);
+  }
+
+  .field input:focus-visible {
+    box-shadow: 0 0 0 2px var(--color-accent);
+  }
+
+  .field input[aria-invalid='true'] {
+    border-color: var(--color-primary);
+  }
+
+  .field label {
+    position: absolute;
+    left: 1rem;
+    top: 1.15rem;
+    font-size: 1rem;
+    color: var(--color-muted);
+    pointer-events: none;
+    transform-origin: left top;
+    transition:
+      transform var(--dur) var(--ease-out),
+      color var(--dur) var(--ease-out);
+  }
+
+  .field label span {
+    font-size: 0.85em;
+  }
+
+  .field input:focus + label,
+  .field input:not(:placeholder-shown) + label {
+    transform: translateY(-0.7rem) scale(0.75);
+    color: var(--color-accent);
+  }
+
+  .lead__hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .consent {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.4rem 1fr;
+    gap: 0.85rem;
+    align-items: start;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--color-muted);
+    cursor: pointer;
+  }
+
+  .consent input {
+    position: absolute;
+    opacity: 0;
+    width: 1.4rem;
+    height: 1.4rem;
+    margin: 0;
+  }
+
+  .consent__box {
+    width: 1.4rem;
+    height: 1.4rem;
+    border: 2px solid var(--color-muted);
+    border-radius: 3px;
+    transition:
+      background var(--dur-fast),
+      border-color var(--dur-fast);
+  }
+
+  .consent input:checked + .consent__box {
+    border-color: transparent;
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='%2307060c' stroke-width='3'/%3E%3C/svg%3E") center / 80% no-repeat,
+      var(--color-accent);
+  }
+
+  .consent input:focus-visible + .consent__box {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  .consent input[aria-invalid='true'] + .consent__box {
+    border-color: var(--color-primary);
+  }
+
+  .consent a {
+    color: var(--color-text);
+  }
+
+  .lead :global(.lead__submit) {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .lead__status {
+    margin-top: 1rem;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--color-text);
+  }
+
+  .lead__status:empty {
+    display: none;
+  }
+
+  :global(.lead.is-success) .lead__status {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 900;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  :global(.lead.is-success) fieldset {
+    display: none;
+  }
+
+  .lead__dev {
+    margin-top: 0.75rem;
+    font-family: ui-monospace, monospace;
+    font-size: 0.75rem;
+    color: var(--color-accent);
+  }
+
+  @media (max-width: 900px) {
+    .cta__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

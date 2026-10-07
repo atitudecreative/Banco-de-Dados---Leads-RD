@@ -1,0 +1,281 @@
+---
+import Logo from '@/components/brand/Logo.astro';
+import Button from '@/components/ui/Button.astro';
+import Countdown from '@/components/ui/Countdown.astro';
+import { event, dateParts, display, primaryHref, primaryIsExternal, socialList } from '@/config/event';
+
+interface Props {
+  /** Esconde o bloco de CTA final (páginas internas). */
+  minimal?: boolean;
+}
+const { minimal = false } = Astro.props;
+
+const links = [
+  { href: '/#evento', label: 'O Evento' },
+  { href: '/#experiencia', label: 'Experiência' },
+  { href: '/#atracoes', label: 'Atrações' },
+  { href: '/#local', label: 'Local' },
+  { href: '/#galeria', label: 'Galeria' },
+  { href: '/#faq', label: 'FAQ' },
+];
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  {
+    !minimal && (
+      <div class="footer__final container">
+        <p class="footer__eyebrow kicker" data-reveal="fade">
+          Contagem regressiva · {dateParts.short}.{dateParts.year}
+        </p>
+        <p class="footer__big" data-reveal="mask" aria-hidden="true">
+          <span class="line">
+            <span>Essa virada</span>
+          </span>
+          <span class="line" style="--l:1">
+            <span class="text-gradient">vai ser diferente.</span>
+          </span>
+        </p>
+        <p class="sr-only">Essa virada vai ser diferente.</p>
+        <div class="footer__cd" data-reveal>
+          <Countdown variant="compact" />
+          <Button href={primaryHref} external={primaryIsExternal} size="lg" data-track="cta-footer">
+            Quero viver o MaraVira
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  <div class="footer__grid container">
+    <div class="footer__brand">
+      <a href="/" aria-label={`${event.eventName} ${event.eventYear} — início`}>
+        <Logo year />
+      </a>
+      <p>Uma realização da <strong>{event.organizer}</strong>.</p>
+      <p class="footer__tag">Réveillon cristão do {event.city}.</p>
+    </div>
+
+    <div class="footer__col">
+      <h2 class="footer__h">Evento</h2>
+      <ul role="list">
+        <li>{dateParts.long}</li>
+        <li>Horário: <span class:list={{ tbd: !event.eventTime }}>{display(event.eventTime)}</span></li>
+        <li>Local: <span class:list={{ tbd: !event.venue.name }}>{display(event.venue.name)}</span></li>
+        <li>{event.city} · {event.state}</li>
+      </ul>
+    </div>
+
+    <nav class="footer__col" aria-label="Rodapé">
+      <h2 class="footer__h">Navegue</h2>
+      <ul role="list">
+        {
+          links.map((l) => (
+            <li>
+              <a href={l.href}>{l.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="footer__col">
+      <h2 class="footer__h">Redes</h2>
+      <ul role="list">
+        {
+          socialList.map((s) => (
+            <li>
+              {s.url ? (
+                <a href={s.url} target="_blank" rel="noopener noreferrer">
+                  {s.label}
+                  <span class="sr-only"> (abre em nova aba)</span>
+                </a>
+              ) : (
+                <span class="tbd">{s.label} · em breve</span>
+              )}
+            </li>
+          ))
+        }
+        {
+          event.organizerUrl && (
+            <li>
+              <a href={event.organizerUrl} target="_blank" rel="noopener noreferrer">
+                {event.organizer}
+              </a>
+            </li>
+          )
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer__legal container">
+    <p>© {year} {event.organizer}. Todos os direitos reservados.</p>
+    <ul role="list">
+      <li><a href="/privacidade">Política de Privacidade</a></li>
+      <li><a href="/termos">Termos de Uso</a></li>
+    </ul>
+  </div>
+
+  <div class="footer__word" aria-hidden="true">
+    <span>Mara</span><span class="text-gradient">Vira</span>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    position: relative;
+    overflow: hidden;
+    padding-top: var(--section-y);
+    background:
+      radial-gradient(60% 40% at 50% 100%, rgb(255 46 136 / 0.3), transparent 70%),
+      radial-gradient(40% 30% at 10% 100%, rgb(59 43 255 / 0.35), transparent 70%),
+      var(--color-background);
+    border-top: 1px solid var(--color-line);
+  }
+
+  /* ---------- CTA final ------------------------------------------------- */
+  .footer__final {
+    padding-bottom: var(--section-y);
+  }
+
+  .footer__big {
+    margin-block: 1.25rem clamp(2.5rem, 5vw, 4rem);
+    font-family: var(--font-display);
+    font-size: var(--fs-h1);
+    font-weight: 900;
+    line-height: 0.86;
+    text-transform: uppercase;
+  }
+
+  .footer__cd {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    border: 1px solid var(--color-line);
+    background: rgb(16 14 26 / 0.6);
+  }
+
+  .footer__cd :global(.cd__units) {
+    justify-content: flex-start;
+  }
+
+  /* ---------- Colunas --------------------------------------------------- */
+  .footer__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr));
+    gap: 2.5rem;
+    padding-block: clamp(3rem, 6vw, 4.5rem);
+    border-top: 1px solid var(--color-line);
+  }
+
+  .footer__brand {
+    display: grid;
+    align-content: start;
+    gap: 1rem;
+    color: var(--color-muted);
+  }
+
+  .footer__brand a {
+    justify-self: start;
+    font-size: 1.15rem;
+    text-decoration: none;
+  }
+
+  .footer__brand strong {
+    color: var(--color-text);
+  }
+
+  .footer__tag {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--color-text);
+  }
+
+  .footer__h {
+    margin-bottom: 1rem;
+    font-family: var(--font-body);
+    font-size: var(--fs-caption);
+    font-weight: 800;
+    letter-spacing: var(--tracking-caps);
+    color: var(--color-accent);
+  }
+
+  .footer__col ul {
+    display: grid;
+    gap: 0.6rem;
+    font-size: 0.9375rem;
+    color: var(--color-text);
+  }
+
+  .footer__col a {
+    text-decoration: none;
+    background: linear-gradient(var(--color-text), var(--color-text)) left bottom / 0 1px no-repeat;
+    transition: background-size var(--dur) var(--ease-out);
+  }
+
+  .footer__col a:hover,
+  .footer__col a:focus-visible {
+    background-size: 100% 1px;
+  }
+
+  .footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 1.5rem;
+    border-top: 1px solid var(--color-line);
+    font-size: var(--fs-caption);
+    color: var(--color-muted);
+  }
+
+  .footer__legal ul {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .footer__legal a {
+    color: var(--color-text);
+  }
+
+  .footer__word {
+    display: flex;
+    justify-content: center;
+    margin-bottom: -0.2em;
+    font-family: var(--font-display);
+    font-size: 25.5vw;
+    font-weight: 900;
+    line-height: 0.8;
+    text-transform: uppercase;
+    white-space: nowrap;
+    user-select: none;
+    color: rgb(246 243 238 / 0.06);
+  }
+
+  @media (max-width: 900px) {
+    .footer__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .footer__brand {
+      grid-column: 1 / -1;
+    }
+
+    .footer__cd :global(.btn) {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .footer__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

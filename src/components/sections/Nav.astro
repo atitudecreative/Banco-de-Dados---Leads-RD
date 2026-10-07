@@ -1,0 +1,440 @@
+---
+import Logo from '@/components/brand/Logo.astro';
+import Button from '@/components/ui/Button.astro';
+import { event, primaryHref, primaryIsExternal, dateParts, socialList } from '@/config/event';
+
+const navLinks = [
+  { href: '#evento', label: 'O Evento' },
+  { href: '#experiencia', label: 'Experiência' },
+  { href: '#atracoes', label: 'Atrações' },
+  { href: '#local', label: 'Local' },
+  { href: '#faq', label: 'FAQ' },
+];
+---
+
+<header class="nav" data-nav>
+  <div class="nav__inner">
+    <a class="nav__brand" href="#topo" aria-label={`${event.eventName} ${event.eventYear} — voltar ao topo`}>
+      <Logo />
+    </a>
+
+    <nav class="nav__links" aria-label="Principal">
+      <ul role="list">
+        {
+          navLinks.map((l) => (
+            <li>
+              <a href={l.href} data-nav-link>
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="nav__actions">
+      <Button href={primaryHref} external={primaryIsExternal} class="nav__cta" data-track="cta-nav">Quero ir</Button>
+      <button class="nav__toggle" type="button" aria-label="Abrir menu" aria-haspopup="dialog" aria-controls="menu" aria-expanded="false" data-menu-open>
+        <span class="nav__toggle-label" aria-hidden="true">Menu</span>
+        <span class="nav__burger" aria-hidden="true"><span></span><span></span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Menu mobile: <dialog> nativo = foco preso, Esc e fundo inerte. -->
+<dialog class="menu" id="menu" aria-label="Menu" data-menu>
+  <div class="menu__bg" aria-hidden="true"></div>
+  <div class="menu__top">
+    <Logo />
+    <button class="menu__close" type="button" data-menu-close>
+      <span>Fechar</span>
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.4"></path></svg>
+    </button>
+  </div>
+  <nav aria-label="Menu principal" class="menu__nav">
+    <ol role="list">
+      {
+        navLinks.map((l, i) => (
+          <li style={`--i:${i}`}>
+            <a href={l.href} data-menu-link>
+              <span class="menu__num">0{i + 1}</span>
+              <span class="menu__label">{l.label}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </nav>
+  <div class="menu__foot">
+    <Button href={primaryHref} external={primaryIsExternal} size="lg" data-menu-link data-track="cta-menu">Quero viver o MaraVira</Button>
+    <p class="menu__meta">
+      <strong>{dateParts.short}.{dateParts.year}</strong>
+      <span>{event.city}</span>
+    </p>
+    <ul class="menu__socials" role="list">
+      {
+        socialList.map((s) =>
+          s.url ? (
+            <li>
+              <a href={s.url} target="_blank" rel="noopener noreferrer">
+                {s.label}
+              </a>
+            </li>
+          ) : (
+            <li>
+              <span class="tbd">{s.label} · em breve</span>
+            </li>
+          ),
+        )
+      }
+    </ul>
+  </div>
+</dialog>
+
+<style>
+  .nav {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: var(--z-nav);
+    height: var(--nav-h);
+    transition:
+      background-color var(--dur) var(--ease-out),
+      transform var(--dur) var(--ease-out),
+      backdrop-filter var(--dur) var(--ease-out);
+  }
+
+  .nav::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    height: 1px;
+    background: var(--gradient-virada);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-slow) var(--ease-out);
+  }
+
+  :global(.nav.is-scrolled) {
+    background: rgb(7 6 12 / 0.72);
+    backdrop-filter: blur(14px) saturate(1.4);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  }
+
+  :global(.nav.is-scrolled)::after {
+    transform: scaleX(var(--progress, 0));
+    transition: none;
+  }
+
+  .nav__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    height: 100%;
+    max-width: var(--max-w);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .nav__brand {
+    font-size: 0.95rem;
+    text-decoration: none;
+    border-radius: 2px;
+  }
+
+  .nav__links ul {
+    display: flex;
+    gap: clamp(1.25rem, 2.5vw, 2.5rem);
+  }
+
+  .nav__links a {
+    position: relative;
+    display: inline-block;
+    padding-block: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--color-muted);
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+
+  .nav__links a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.2rem;
+    height: 2px;
+    background: var(--gradient-virada);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .nav__links a:hover,
+  .nav__links a[aria-current='true'] {
+    color: var(--color-text);
+  }
+
+  .nav__links a:hover::after,
+  .nav__links a[aria-current='true']::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  .nav__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .nav__actions :global(.nav__cta) {
+    min-height: 2.75rem;
+    padding: 0.7rem 1.1rem 0.7rem 1.35rem;
+    font-size: 1rem;
+    --chamfer: 10px;
+  }
+
+  .nav__toggle {
+    display: none;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 2.75rem;
+    padding-inline: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 800;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+  }
+
+  .nav__burger {
+    display: grid;
+    gap: 6px;
+    width: 26px;
+  }
+
+  .nav__burger span {
+    height: 2px;
+    background: currentColor;
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .nav__burger span:last-child {
+    width: 65%;
+    justify-self: end;
+  }
+
+  @media (hover: hover) {
+    .nav__toggle:hover .nav__burger span:last-child {
+      transform: scaleX(1.54);
+      transform-origin: right;
+    }
+  }
+
+  @media (max-width: 960px) {
+    .nav__links {
+      display: none;
+    }
+
+    .nav__toggle {
+      display: inline-flex;
+    }
+  }
+
+  @media (max-width: 520px) {
+    :global(:root) {
+      --nav-h: 64px;
+    }
+
+    .nav__actions :global(.nav__cta) {
+      display: none;
+    }
+
+    .nav__toggle-label {
+      display: none;
+    }
+  }
+
+  /* --------------------------------------------------------------------
+     MENU FULLSCREEN
+     ------------------------------------------------------------------ */
+  .menu {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    color: var(--color-text);
+    background: transparent;
+    overflow: hidden auto;
+    overscroll-behavior: contain;
+  }
+
+  .menu::backdrop {
+    background: transparent;
+  }
+
+  .menu[open] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .menu__bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(80% 50% at 100% 0%, rgb(255 46 136 / 0.35), transparent 70%),
+      radial-gradient(70% 50% at 0% 100%, rgb(59 43 255 / 0.4), transparent 70%),
+      var(--color-background);
+    clip-path: circle(0% at calc(100% - 3rem) 2rem);
+    transition: clip-path 700ms var(--ease-in-out);
+  }
+
+  :global(.menu.is-open) .menu__bg {
+    clip-path: circle(150% at calc(100% - 3rem) 2rem);
+  }
+
+  .menu__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--nav-h);
+    padding-inline: var(--gutter);
+    font-size: 0.95rem;
+  }
+
+  .menu__close {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 2.75rem;
+    padding-inline: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 800;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+  }
+
+  .menu__nav {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 2rem var(--gutter);
+  }
+
+  .menu__nav ol {
+    display: grid;
+    gap: 0.25rem;
+    width: 100%;
+  }
+
+  .menu__nav a {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding-block: 0.2rem;
+    text-decoration: none;
+  }
+
+  .menu__num {
+    font-size: var(--fs-caption);
+    font-weight: 700;
+    color: var(--color-accent);
+    letter-spacing: 0.1em;
+  }
+
+  .menu__label {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 15vw, 6rem);
+    font-weight: 900;
+    line-height: 0.95;
+    text-transform: uppercase;
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .menu__nav a:hover .menu__label,
+  .menu__nav a:focus-visible .menu__label {
+    background: var(--gradient-virada);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    transform: translateX(0.5rem);
+  }
+
+  .menu__nav li,
+  .menu__foot > * {
+    opacity: 0;
+    transform: translate3d(0, 1.5rem, 0);
+    transition:
+      opacity 500ms var(--ease-out),
+      transform 700ms var(--ease-out);
+  }
+
+  :global(.menu.is-open) .menu__nav li,
+  :global(.menu.is-open) .menu__foot > * {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(220ms + var(--i, 0) * 60ms);
+  }
+
+  .menu__foot {
+    display: grid;
+    gap: 1.25rem;
+    padding: 1.5rem var(--gutter) max(2rem, env(safe-area-inset-bottom));
+  }
+
+  .menu__foot > :nth-child(1) {
+    --i: 5;
+  }
+
+  .menu__foot > :nth-child(2) {
+    --i: 6;
+  }
+
+  .menu__foot > :nth-child(3) {
+    --i: 7;
+  }
+
+  .menu__foot :global(.btn) {
+    width: 100%;
+  }
+
+  .menu__meta {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .menu__meta strong {
+    color: var(--color-accent);
+  }
+
+  .menu__socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    font-size: var(--fs-caption);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .menu__bg,
+    .menu__nav li,
+    .menu__foot > * {
+      transition: none;
+    }
+  }
+</style>

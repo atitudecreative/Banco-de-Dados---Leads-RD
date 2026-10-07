@@ -1,0 +1,18 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import { event } from '@/config/event';
+---
+
+<!--
+  ⚠️ PLACEHOLDER — os Termos de Uso devem ser fornecidos pela organização /
+  jurídico. Substitua o conteúdo abaixo integralmente.
+-->
+<PageLayout title="Termos de Uso" path="/termos" kicker="Documento em preparação" noindex>
+  <p class="placeholder-note">Texto oficial em preparação</p>
+  <h2>Sobre este documento</h2>
+  <p>
+    Os Termos de Uso do site e as regras de participação do {event.eventName} {event.eventYear} serão publicados aqui pela {event.organizer}.
+  </p>
+  <h2>Regras do evento</h2>
+  <p>Regras de acesso, itens permitidos, classificação e demais orientações: a definir.</p>
+</PageLayout>

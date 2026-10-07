@@ -1,0 +1,630 @@
+---
+import Button from '@/components/ui/Button.astro';
+import CrowdSilhouette from '@/components/brand/CrowdSilhouette.astro';
+import { event, dateParts, primaryHref, primaryIsExternal } from '@/config/event';
+
+const mara = [...'Mara'];
+const vira = [...'Vira'];
+const hasVideo = Boolean(event.heroVideo.webm || event.heroVideo.mp4);
+---
+
+<section class="hero" id="topo" aria-labelledby="hero-title" data-hero>
+  <!-- Palco: céu, anéis de estádio, canhões de luz, faíscas. Puramente decorativo. -->
+  <div class="hero__stage" aria-hidden="true">
+    <div class="hero__sky"></div>
+    {
+      hasVideo && (
+        <video class="hero__video" muted loop playsinline preload="none" data-hero-video>
+          {event.heroVideo.webm && <source data-src={event.heroVideo.webm} type="video/webm" />}
+          {event.heroVideo.mp4 && <source data-src={event.heroVideo.mp4} type="video/mp4" />}
+        </video>
+      )
+    }
+    <svg class="hero__rings" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" focusable="false">
+      <g fill="none" stroke="currentColor">
+        <ellipse cx="800" cy="760" rx="1180" ry="330" stroke-width="1"></ellipse>
+        <ellipse cx="800" cy="760" rx="940" ry="250" stroke-width="1"></ellipse>
+        <ellipse cx="800" cy="760" rx="700" ry="175" stroke-width="1.2"></ellipse>
+        <ellipse cx="800" cy="760" rx="470" ry="110" stroke-width="1.5"></ellipse>
+      </g>
+    </svg>
+    <div class="hero__beams" data-parallax="0.6">
+      <span class="beam" style="--x:12%;--r:-28deg;--c:var(--color-secondary);--t:9s"></span>
+      <span class="beam" style="--x:30%;--r:-12deg;--c:var(--color-primary);--t:11s"></span>
+      <span class="beam" style="--x:50%;--r:2deg;--c:var(--color-accent);--t:8s"></span>
+      <span class="beam" style="--x:68%;--r:14deg;--c:var(--color-primary);--t:12s"></span>
+      <span class="beam" style="--x:88%;--r:30deg;--c:var(--color-secondary);--t:10s"></span>
+    </div>
+    <canvas class="hero__sparks" data-sparks></canvas>
+  </div>
+
+  <div class="hero__content">
+    <p class="hero__kicker">
+      <span class="hero__live" aria-hidden="true"></span>
+      Réveillon cristão do Rio · {event.organizer}
+    </p>
+
+    <h1 id="hero-title" class="hero__title" data-parallax="-0.25">
+      <span class="sr-only">{event.eventName} {event.eventYear} — Réveillon cristão no {event.city}, {dateParts.long}</span>
+      <span class="hero__word hero__word--mara" aria-hidden="true">
+        {mara.map((ch, i) => <span class="ch" style={`--c:${i}`}>{ch}</span>)}
+      </span>
+      <span class="hero__word hero__word--vira" aria-hidden="true">
+        {vira.map((ch, i) => <span class="ch" style={`--c:${i + 4}`}>{ch}</span>)}
+      </span>
+    </h1>
+    <p class="hero__year" aria-hidden="true">{event.eventYear}</p>
+  </div>
+
+  <div class="hero__crowd" aria-hidden="true">
+    <CrowdSilhouette seed={11} />
+  </div>
+
+  <div class="hero__bar">
+    <div class="hero__date">
+      <span class="hero__dd">{dateParts.short}</span>
+      <span class="hero__dmeta">
+        <span>{dateParts.year}</span>
+        <span>{event.city}</span>
+      </span>
+    </div>
+
+    <div class="hero__pitch">
+      <p class="hero__headline">Viva a virada<span class="hero__dot">.</span></p>
+      <p class="hero__sub">O Rio vira o ano em adoração. Louvor, oração e festa — milhares de vozes na mesma contagem regressiva.</p>
+    </div>
+
+    <div class="hero__ctas">
+      <Button href={primaryHref} external={primaryIsExternal} size="lg" data-track="cta-hero">Quero viver o MaraVira</Button>
+      <Button href="#evento" variant="ghost" icon="none">Saiba mais</Button>
+    </div>
+  </div>
+
+  <a class="hero__scroll" href="#placar" aria-label="Rolar para a contagem regressiva">
+    <span aria-hidden="true"></span>
+  </a>
+</section>
+
+<style>
+  .hero {
+    --mx: 0;
+    --my: 0;
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    min-height: 100svh;
+    min-height: max(100svh, 620px);
+    padding-top: var(--nav-h);
+    overflow: hidden;
+  }
+
+  /* ---------- PALCO -------------------------------------------------- */
+  .hero__stage,
+  .hero__sky,
+  .hero__video,
+  .hero__rings,
+  .hero__beams,
+  .hero__sparks {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero__stage {
+    z-index: -1;
+  }
+
+  .hero__sky {
+    background:
+      radial-gradient(55% 45% at 50% 82%, rgb(255 46 136 / 0.55), transparent 70%),
+      radial-gradient(40% 35% at 50% 92%, rgb(255 178 63 / 0.55), transparent 70%),
+      radial-gradient(70% 60% at 15% 10%, rgb(59 43 255 / 0.4), transparent 70%),
+      radial-gradient(60% 50% at 95% 25%, rgb(59 43 255 / 0.28), transparent 70%),
+      var(--color-background);
+  }
+
+  /* "Respiração" da luz: só opacidade (roda no compositor, sem repaint) */
+  .hero__sky::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(45% 40% at 50% 88%, rgb(255 46 136 / 0.5), transparent 70%);
+    animation: sky-breathe 6s var(--ease-in-out) infinite alternate;
+  }
+
+  @keyframes sky-breathe {
+    from {
+      opacity: 0.2;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .hero__video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    mix-blend-mode: screen;
+    transition: opacity 1.2s var(--ease-out);
+  }
+
+  :global(.hero__video.is-ready) {
+    opacity: 0.55;
+  }
+
+  .hero__rings {
+    width: 100%;
+    height: 100%;
+    color: rgb(246 243 238 / 0.12);
+    transform: translate3d(calc(var(--mx) * -10px), calc(var(--my) * -6px), 0);
+  }
+
+  .hero__rings ellipse {
+    stroke-dasharray: 6 10;
+  }
+
+  .hero__beams {
+    mix-blend-mode: screen;
+    transform: translate3d(calc(var(--mx) * 18px), 0, 0);
+  }
+
+  .beam {
+    will-change: rotate;
+    position: absolute;
+    left: var(--x);
+    bottom: 12%;
+    width: clamp(90px, 14vw, 240px);
+    height: 135%;
+    transform-origin: 50% 100%;
+    background: linear-gradient(to top, color-mix(in srgb, var(--c) 85%, white 15%), transparent 78%);
+    clip-path: polygon(46% 100%, 54% 100%, 100% 0, 0 0);
+    filter: blur(14px);
+    opacity: 0.55;
+    translate: -50% 0;
+    rotate: var(--r);
+    animation: beam-sweep var(--t) var(--ease-in-out) infinite alternate;
+  }
+
+  @keyframes beam-sweep {
+    from {
+      rotate: calc(var(--r) - 9deg);
+    }
+    to {
+      rotate: calc(var(--r) + 9deg);
+    }
+  }
+
+  .hero__sparks {
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  /* ---------- TIPOGRAFIA GIGANTE ------------------------------------- */
+  .hero__content {
+    --size: clamp(5.5rem, min(23vw, 31svh), 23rem);
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-content: center;
+    width: 100%;
+    max-width: var(--max-w);
+    margin-inline: auto;
+    padding: clamp(1rem, 3vh, 2.5rem) var(--gutter) 0;
+  }
+
+  .hero__kicker {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: clamp(0.5rem, 2vh, 1.5rem);
+    font-size: var(--fs-caption);
+    font-weight: 700;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--color-text);
+    opacity: 0;
+    animation: rise 900ms var(--ease-out) 150ms forwards;
+  }
+
+  .hero__live {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: var(--color-primary);
+    box-shadow: 0 0 0 0 rgb(255 46 136 / 0.7);
+    animation: live 1.8s ease-out infinite;
+  }
+
+  @keyframes live {
+    to {
+      box-shadow: 0 0 0 12px rgb(255 46 136 / 0);
+    }
+  }
+
+  .hero__title {
+    display: grid;
+    font-size: var(--size);
+    font-weight: 900;
+    line-height: 0.8;
+    letter-spacing: -0.01em;
+    translate: calc(var(--mx) * -8px) calc(var(--my) * -5px);
+  }
+
+  .hero__word {
+    display: flex;
+    overflow: hidden;
+    padding-top: 0.04em;
+  }
+
+  .hero__word--vira {
+    margin-left: 0.48em;
+  }
+
+  /* Desktop: MARA no alto à esquerda, VIRA desce em diagonal até o 2027 */
+  @media (min-width: 1000px) {
+    .hero__word--vira {
+      margin-left: 1.3em;
+    }
+  }
+
+  .ch {
+    display: inline-block;
+    transform: translate3d(0, 105%, 0);
+    animation: rise 1100ms var(--ease-out) forwards;
+    animation-delay: calc(250ms + var(--c) * 55ms);
+  }
+
+  /* VIRA literalmente "vira": cada letra gira no eixo X ao entrar */
+  .hero__word--vira .ch {
+    transform: rotateX(-95deg);
+    transform-origin: 50% 100%;
+    background: var(--gradient-virada-v);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation-name: flip-in;
+    animation-duration: 1000ms;
+    animation-delay: calc(600ms + var(--c) * 70ms);
+  }
+
+  .hero__word--vira {
+    perspective: 900px;
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 105%, 0);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes flip-in {
+    from {
+      transform: rotateX(-95deg);
+      opacity: 0;
+    }
+    to {
+      transform: none;
+      opacity: 1;
+    }
+  }
+
+  .hero__year {
+    align-self: end;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-family: var(--font-display);
+    font-size: calc(var(--size) * 0.62);
+    font-weight: 900;
+    line-height: 0.8;
+    color: transparent;
+    -webkit-text-stroke: 2px rgb(246 243 238 / 0.85);
+    opacity: 0;
+    animation: rise 1200ms var(--ease-out) 900ms forwards;
+    translate: calc(var(--mx) * 10px) 0;
+  }
+
+  /* ---------- MULTIDÃO ----------------------------------------------- */
+  .hero__crowd {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 2;
+    height: clamp(150px, 30svh, 320px);
+    pointer-events: none;
+  }
+
+  .hero__crowd::after {
+    content: '';
+    position: absolute;
+    inset: 40% 0 0;
+    background: linear-gradient(to bottom, transparent, var(--color-background) 85%);
+  }
+
+  .hero__crowd :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  @media (min-width: 1000px) {
+    .hero__crowd :global(.crowd-lights circle) {
+      animation: twinkle 2.6s ease-in-out infinite alternate;
+      animation-delay: var(--d);
+    }
+  }
+
+  @keyframes twinkle {
+    to {
+      opacity: 0.25;
+    }
+  }
+
+  /* ---------- BARRA INFERIOR: DATA / PITCH / CTAs ---------------------- */
+  .hero__bar {
+    position: relative;
+    z-index: 3;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: end;
+    gap: clamp(1.5rem, 3vw, 3.5rem);
+    width: 100%;
+    max-width: var(--max-w);
+    margin-inline: auto;
+    padding: clamp(1.5rem, 3vh, 2.5rem) var(--gutter) clamp(2rem, 5vh, 3.5rem);
+    opacity: 0;
+    animation: rise 1000ms var(--ease-out) 1100ms forwards;
+  }
+
+  .hero__date {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    font-family: var(--font-display);
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 0.85;
+  }
+
+  .hero__dd {
+    font-size: clamp(3.25rem, 6vw, 5.5rem);
+    color: var(--color-accent);
+    text-shadow: 0 0 40px rgb(255 178 63 / 0.45);
+  }
+
+  .hero__dmeta {
+    display: grid;
+    gap: 0.35rem;
+    padding-left: 0.9rem;
+    border-left: 2px solid var(--color-line);
+    font-size: clamp(1.1rem, 1.6vw, 1.5rem);
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+
+  .hero__pitch {
+    text-shadow: 0 2px 18px rgb(7 6 12 / 0.9);
+  }
+
+  .hero__headline {
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 4.2vw, 4rem);
+    font-weight: 900;
+    line-height: 0.9;
+    text-transform: uppercase;
+  }
+
+  .hero__dot {
+    color: var(--color-primary);
+  }
+
+  .hero__sub {
+    max-width: 34rem;
+    margin-top: 0.6rem;
+    color: var(--color-text);
+    opacity: 0.86;
+  }
+
+  .hero__ctas {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .hero__ctas :global(.btn--ghost) {
+    align-self: center;
+  }
+
+  /* Indicador de rolagem */
+  .hero__scroll {
+    position: absolute;
+    left: 50%;
+    bottom: 0.75rem;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    translate: -50% 0;
+  }
+
+  .hero__scroll span {
+    width: 2px;
+    height: 1.75rem;
+    background: linear-gradient(to bottom, transparent, var(--color-text));
+    animation: cue 2s var(--ease-in-out) infinite;
+    transform-origin: top;
+  }
+
+  @keyframes cue {
+    0% {
+      transform: scaleY(0);
+    }
+    50% {
+      transform: scaleY(1);
+      transform-origin: top;
+    }
+    51% {
+      transform-origin: bottom;
+    }
+    100% {
+      transform: scaleY(0);
+      transform-origin: bottom;
+    }
+  }
+
+  /* Saída cinematográfica no scroll (progressive enhancement, só CSS) */
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .hero__content,
+      .hero__stage {
+        animation: hero-exit linear both;
+        animation-timeline: view();
+        animation-range: exit 0% exit 100%;
+      }
+    }
+  }
+
+  @keyframes hero-exit {
+    to {
+      transform: scale(1.08) translateY(-6%);
+      opacity: 0.15;
+    }
+  }
+
+  /* ---------- TABLET ------------------------------------------------- */
+  @media (min-width: 721px) and (max-width: 1100px) and (orientation: portrait) {
+    .hero__content {
+      --size: min(30vw, 30svh);
+      align-content: end;
+      padding-bottom: 2rem;
+    }
+  }
+
+  @media (max-width: 1100px) {
+    .hero__bar {
+      grid-template-columns: auto 1fr;
+    }
+
+    .hero__ctas {
+      grid-column: 1 / -1;
+      flex-direction: row;
+      align-items: center;
+      gap: 1.5rem;
+    }
+  }
+
+  /* ---------- MOBILE ------------------------------------------------- */
+  @media (max-width: 720px) {
+    .hero {
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .hero__content {
+      grid-template-columns: 1fr;
+      align-content: start;
+      padding-top: 1.25rem;
+    }
+
+    .hero__content {
+      --size: clamp(5rem, 31vw, 9.5rem);
+    }
+
+    .hero__word--vira {
+      margin-left: 0.32em;
+    }
+
+    .hero__year {
+      writing-mode: horizontal-tb;
+      transform: none;
+      justify-self: end;
+      margin-top: 0.08em;
+      font-size: clamp(3.5rem, 21vw, 6.5rem);
+      -webkit-text-stroke-width: 1.5px;
+    }
+
+    .hero__crowd {
+      height: 30svh;
+      opacity: 0.9;
+    }
+
+    .hero__bar {
+      grid-row: 3;
+      grid-template-columns: 1fr;
+      gap: 1.1rem;
+      padding-bottom: max(1.75rem, env(safe-area-inset-bottom));
+    }
+
+    .hero__date {
+      order: -1;
+    }
+
+    .hero__dd {
+      font-size: 3rem;
+    }
+
+    .hero__dmeta {
+      font-size: 1.05rem;
+    }
+
+    .hero__headline {
+      font-size: 2.6rem;
+    }
+
+    .hero__sub {
+      font-size: 0.98rem;
+    }
+
+    .hero__ctas {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.25rem;
+    }
+
+    .hero__scroll {
+      display: none;
+    }
+
+    .beam {
+      filter: blur(10px);
+    }
+
+    .beam:nth-child(2),
+    .beam:nth-child(4) {
+      display: none;
+    }
+  }
+
+  /* Telas baixas (laptops 1366x650 etc.) */
+  @media (min-width: 721px) and (max-height: 760px) {
+    .hero__content {
+      --size: clamp(5rem, min(20vw, 28svh), 14rem);
+    }
+
+    .hero__sub {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero *,
+    .hero *::before,
+    .hero *::after {
+      animation-duration: 1ms !important;
+      animation-delay: 0ms !important;
+      animation-iteration-count: 1 !important;
+    }
+
+    .beam {
+      rotate: var(--r);
+    }
+  }
+</style>

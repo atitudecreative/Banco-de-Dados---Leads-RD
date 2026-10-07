@@ -1,0 +1,23 @@
+{
+  "name": "maravira-2027",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Site oficial do MaraVira 2027 — Réveillon cristão no Rio de Janeiro (Igreja Batista Atitude).",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "placeholders": "node scripts/generate-placeholders.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/big-shoulders-display": "5.3.0",
+    "@fontsource-variable/manrope": "5.3.0",
+    "astro": "5.18.2",
+    "sharp": "0.34.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.4",
+    "typescript": "5.9.3"
+  }
+}

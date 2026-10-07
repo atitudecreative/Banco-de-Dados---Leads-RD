@@ -1,0 +1,283 @@
+---
+/**
+ * Countdown "placar da virada": dígitos split-flap (placar de estádio) que
+ * viram a cada mudança. Toda a lógica está em src/scripts/countdown.ts.
+ * Ao chegar a zero, troca automaticamente para a mensagem de celebração.
+ */
+import { countdownTarget, dateParts, nextYear } from '@/config/event';
+
+interface Props {
+  variant?: 'full' | 'compact';
+  class?: string;
+}
+const { variant = 'full', class: cls } = Astro.props;
+
+const units = [
+  { key: 'days', label: 'Dias', digits: 3 },
+  { key: 'hours', label: 'Horas', digits: 2 },
+  { key: 'minutes', label: 'Minutos', digits: 2 },
+  { key: 'seconds', label: 'Segundos', digits: 2 },
+];
+---
+
+<div class:list={['cd', `cd--${variant}`, cls]} data-countdown data-target={countdownTarget} data-next-year={nextYear}>
+  <!-- Texto para leitores de tela: atualizado a cada minuto, não a cada segundo. -->
+  <p class="sr-only" role="timer" aria-live="off" data-cd-sr>Contagem regressiva para {dateParts.long}.</p>
+
+  <div class="cd__units" aria-hidden="true" data-cd-units>
+    {
+      units.map((u, ui) => (
+        <>
+          {ui > 0 && (
+            <span class="cd__sep">
+              <i />
+              <i />
+            </span>
+          )}
+          <div class:list={['cd__unit', `cd__unit--${u.key}`]}>
+            <div class="cd__digits" data-cd-unit={u.key} data-cd-len={u.digits}>
+              {Array.from({ length: u.digits }).map(() => (
+                <span class="flap" data-flap>
+                  <span class="flap__half flap__top">
+                    <span>–</span>
+                  </span>
+                  <span class="flap__half flap__bottom">
+                    <span>–</span>
+                  </span>
+                  <span class="flap__half flap__top flap__leaf flap__leaf--top">
+                    <span>–</span>
+                  </span>
+                  <span class="flap__half flap__bottom flap__leaf flap__leaf--bottom">
+                    <span>–</span>
+                  </span>
+                </span>
+              ))}
+            </div>
+            <span class="cd__label">{u.label}</span>
+          </div>
+        </>
+      ))
+    }
+  </div>
+
+  <div class="cd__done" data-cd-done hidden>
+    <p class="cd__done-title" data-cd-done-title>É hoje.</p>
+    <p class="cd__done-sub" data-cd-done-sub>A virada é agora.</p>
+  </div>
+</div>
+
+<style>
+  .cd {
+    --fs: clamp(3rem, 10vw, 9.5rem);
+    --tile: #120f1f;
+    --tile-2: #1b1730;
+    --digit: var(--color-text);
+    position: relative;
+    font-family: var(--font-display);
+  }
+
+  .cd--compact {
+    --fs: clamp(2.25rem, 5vw, 4rem);
+  }
+
+  .cd__units {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: clamp(0.4rem, 1.2vw, 1.25rem);
+  }
+
+  .cd__unit {
+    display: grid;
+    justify-items: center;
+    gap: 0.9rem;
+  }
+
+  .cd__digits {
+    display: flex;
+    gap: calc(var(--fs) * 0.05);
+  }
+
+  .cd__unit--days .flap {
+    --digit: var(--color-accent);
+  }
+
+  .cd__label {
+    font-family: var(--font-body);
+    font-size: clamp(0.6875rem, 0.6rem + 0.3vw, 0.875rem);
+    font-weight: 800;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .cd__sep {
+    display: grid;
+    align-content: center;
+    gap: calc(var(--fs) * 0.16);
+    height: var(--fs);
+    padding-inline: 0.1rem;
+  }
+
+  .cd__sep i {
+    width: calc(var(--fs) * 0.07);
+    height: calc(var(--fs) * 0.07);
+    background: var(--color-primary);
+    box-shadow: 0 0 14px var(--color-primary);
+    animation: blink 1s steps(1) infinite;
+  }
+
+  @keyframes blink {
+    50% {
+      opacity: 0.25;
+    }
+  }
+
+  /* ---------- FLAP (split-flap) ---------------------------------------- */
+  .flap {
+    position: relative;
+    display: block;
+    width: calc(var(--fs) * 0.68);
+    height: var(--fs);
+    font-size: var(--fs);
+    font-weight: 900;
+    line-height: 1;
+    color: var(--digit);
+    perspective: calc(var(--fs) * 4);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .flap__half {
+    position: absolute;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    height: 50%;
+    overflow: hidden;
+    background: linear-gradient(var(--tile-2), var(--tile));
+    backface-visibility: hidden;
+  }
+
+  .flap__half > span {
+    display: block;
+    height: var(--fs);
+    line-height: var(--fs);
+  }
+
+  .flap__top {
+    top: 0;
+    align-items: flex-start;
+    border-radius: 6px 6px 0 0;
+    border-bottom: 1px solid rgb(0 0 0 / 0.55);
+  }
+
+  .flap__bottom {
+    bottom: 0;
+    align-items: flex-end;
+    border-radius: 0 0 6px 6px;
+    background: linear-gradient(var(--tile), #0c0a16);
+  }
+
+  /* "Dobradiça" luminosa do placar */
+  .flap::after {
+    content: '';
+    position: absolute;
+    left: -2px;
+    right: -2px;
+    top: 50%;
+    height: 2px;
+    translate: 0 -50%;
+    background: var(--color-background);
+    z-index: 4;
+  }
+
+  .flap__leaf {
+    z-index: 3;
+    visibility: hidden;
+  }
+
+  .flap__leaf--top {
+    transform-origin: 50% 100%;
+  }
+
+  .flap__leaf--bottom {
+    transform-origin: 50% 0%;
+  }
+
+  /* ---------- CELEBRAÇÃO --------------------------------------------- */
+  .cd__done {
+    text-align: center;
+  }
+
+  .cd__done-title {
+    padding-top: 0.16em;
+    font-size: calc(var(--fs) * 1.2);
+    font-weight: 900;
+    line-height: 0.85;
+    text-transform: uppercase;
+    background: var(--gradient-virada);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shine 3s linear infinite;
+  }
+
+  .cd__done-sub {
+    margin-top: 0.75rem;
+    font-size: calc(var(--fs) * 0.35);
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  @keyframes shine {
+    to {
+      background-position: -200% 0;
+    }
+  }
+
+  /* ---------- MOBILE: dias em destaque, H:M:S abaixo ------------------ */
+  @media (max-width: 640px) {
+    .cd--full {
+      --fs: clamp(2.6rem, 15vw, 5rem);
+    }
+
+    .cd--full .cd__units {
+      flex-wrap: wrap;
+      row-gap: 1.5rem;
+    }
+
+    .cd--full .cd__unit--days {
+      flex-basis: 100%;
+      --fs: clamp(4.5rem, 30vw, 8rem);
+    }
+
+    .cd--full .cd__unit--days .flap {
+      --fs: clamp(4.5rem, 30vw, 8rem);
+    }
+
+    .cd--full .cd__units > .cd__sep:first-of-type {
+      display: none;
+    }
+
+    .cd--compact {
+      --fs: clamp(1.9rem, 10vw, 3rem);
+    }
+
+    .cd--compact .cd__units {
+      gap: 0.3rem;
+    }
+
+    .cd--compact .cd__label {
+      letter-spacing: 0.12em;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cd__sep i,
+    .cd__done-title {
+      animation: none;
+    }
+  }
+</style>

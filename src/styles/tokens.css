@@ -1,0 +1,74 @@
+/* ============================================================================
+   MARAVIRA 2027 — DESIGN TOKENS
+   Conceito: "da meia-noite ao primeiro raio de luz".
+   A paleta é um gradiente narrativo: noite (índigo) → celebração (magenta)
+   → amanhecer/fogos (ouro). É a virada, em cor.
+   ========================================================================== */
+
+:root {
+  /* ---- Cores base ------------------------------------------------------- */
+  --color-background: #07060c; /* Noite: quase preto, levemente violeta */
+  --color-surface: #100e1a; /* Camada elevada */
+  --color-surface-2: #181527;
+  --color-primary: #ff2e88; /* Magenta celebração — CTAs e destaques */
+  --color-secondary: #3b2bff; /* Índigo meia-noite — profundidade, luz de palco */
+  --color-accent: #ffb23f; /* Ouro fogos/amanhecer — números, brilho */
+  --color-accent-2: #3de1ff; /* Ciano — reflexos e detalhes pontuais */
+  --color-text: #f6f3ee; /* Branco quente */
+  --color-muted: #a8a3b8; /* Texto secundário (contraste AA sobre o fundo) */
+  --color-line: rgb(246 243 238 / 0.14);
+  --color-ink: #07060c; /* Texto sobre superfícies claras/douradas */
+
+  /* ---- Gradientes de assinatura ---------------------------------------- */
+  --gradient-virada: linear-gradient(100deg, #3b2bff 0%, #ff2e88 48%, #ffb23f 100%);
+  --gradient-virada-v: linear-gradient(180deg, #3b2bff 0%, #ff2e88 55%, #ffb23f 100%);
+  --gradient-glow: radial-gradient(60% 60% at 50% 50%, rgb(255 46 136 / 0.45), transparent 70%);
+
+  /* ---- Tipografia ------------------------------------------------------- */
+  --font-display: 'Big Shoulders Display Variable', 'Arial Narrow', 'Roboto Condensed', Impact, sans-serif;
+  --font-body: 'Manrope Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* Escala fluida: Display > H1 > H2 > H3 > Body > Caption */
+  --fs-display: clamp(5rem, 21vw, 21rem);
+  --fs-h1: clamp(3.25rem, 10vw, 9rem);
+  --fs-h2: clamp(2.75rem, 7vw, 6.5rem);
+  --fs-h3: clamp(1.5rem, 1.1rem + 1.6vw, 2.5rem);
+  --fs-lead: clamp(1.125rem, 1rem + 0.6vw, 1.5rem);
+  --fs-body: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+  --fs-caption: 0.8125rem;
+  --fs-button: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
+
+  --lh-display: 0.82;
+  --lh-heading: 0.9;
+  --lh-body: 1.6;
+  --tracking-caps: 0.14em;
+
+  /* ---- Espaço e layout -------------------------------------------------- */
+  --gutter: clamp(1rem, 4vw, 3.5rem);
+  --section-y: clamp(5rem, 12vw, 11rem);
+  --max-w: 1440px;
+  --radius: 4px;
+  --nav-h: 72px;
+
+  /* ---- Movimento -------------------------------------------------------- */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* expo-out: entra rápido, assenta suave */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 180ms;
+  --dur: 420ms;
+  --dur-slow: 900ms;
+
+  /* ---- Camadas ---------------------------------------------------------- */
+  --z-nav: 50;
+  --z-menu: 60;
+  --z-modal: 80;
+
+  color-scheme: dark;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 1ms;
+    --dur: 1ms;
+    --dur-slow: 1ms;
+  }
+}

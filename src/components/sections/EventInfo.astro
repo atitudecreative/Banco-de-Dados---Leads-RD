@@ -1,0 +1,236 @@
+---
+/**
+ * INFORMAÇÕES ESSENCIAIS — em formato de ingresso.
+ * Todos os valores vêm de src/config/event.ts (vazio = "A definir").
+ */
+import { event, dateParts, display } from '@/config/event';
+
+const weekday = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', timeZone: 'UTC' }).format(new Date(`${event.eventDate}T12:00:00Z`));
+
+const fields = [
+  { label: 'Data', value: dateParts.short, sub: `${dateParts.year} · ${weekday}`, hl: true },
+  { label: 'Horário', value: display(event.eventTime), sub: event.gatesTime ? `Portões: ${event.gatesTime}` : 'Portões: a definir', tbd: !event.eventTime },
+  { label: 'Local', value: display(event.venue.name), sub: event.venue.neighborhood || 'Anúncio em breve', tbd: !event.venue.name },
+  { label: 'Cidade', value: event.city, sub: `${event.state} · Brasil` },
+];
+---
+
+<section class="info section" id="info" aria-labelledby="info-title">
+  <div class="container">
+    <header class="info__head">
+      <p class="kicker" data-reveal="fade">Informações</p>
+      <h2 id="info-title" class="info__title" data-reveal="mask">
+        <span class="line"><span>Anota aí.</span></span>
+      </h2>
+    </header>
+
+    <div class="ticket-wrap" data-reveal="scale" data-tilt>
+      <article class="ticket" aria-label={`Resumo do evento ${event.eventName} ${event.eventYear}`}>
+        <dl class="ticket__main">
+          {
+            fields.map((f) => (
+              <div class:list={['ticket__field', { 'ticket__field--hl': f.hl }]}>
+                <dt>{f.label}</dt>
+                <dd>
+                  <span class:list={['ticket__value', { tbd: f.tbd }]}>{f.value}</span>
+                  <span class="ticket__sub">{f.sub}</span>
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
+        <div class="ticket__stub" aria-hidden="true">
+          <span class="ticket__brand">{event.eventName} {event.eventYear}</span>
+          <span class="ticket__code"></span>
+          <span class="ticket__admit">Entrada: {display(event.priceLabel)}</span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<style>
+  .info__head {
+    margin-bottom: clamp(2rem, 4vw, 3.5rem);
+  }
+
+  .info__title {
+    margin-top: 1.25rem;
+    font-size: var(--fs-h1);
+    font-weight: 900;
+  }
+
+  .ticket-wrap {
+    perspective: 1400px;
+  }
+
+  .ticket {
+    --notch: 1.4rem;
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(6rem, 13vw, 11rem);
+    color: var(--color-ink);
+    background: var(--color-text);
+    transform: rotateX(var(--ry, 0deg)) rotateY(var(--rx, 0deg));
+    transition: transform 600ms var(--ease-out);
+    /* Picotes do ingresso nas bordas da divisão */
+    mask:
+      radial-gradient(circle at calc(100% - clamp(6rem, 13vw, 11rem)) 0, transparent var(--notch), #000 calc(var(--notch) + 0.5px)) top / 100% 51% no-repeat,
+      radial-gradient(circle at calc(100% - clamp(6rem, 13vw, 11rem)) 100%, transparent var(--notch), #000 calc(var(--notch) + 0.5px)) bottom / 100% 51% no-repeat;
+  }
+
+  .ticket::before {
+    content: '';
+    position: absolute;
+    inset: var(--notch) auto var(--notch) calc(100% - clamp(6rem, 13vw, 11rem));
+    border-left: 2px dashed rgb(7 6 12 / 0.35);
+  }
+
+  .ticket__main {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .ticket__field {
+    display: grid;
+    align-content: space-between;
+    gap: 2.5rem;
+    min-height: clamp(12rem, 22vw, 19rem);
+    padding: clamp(1.25rem, 2.5vw, 2.25rem);
+    border-right: 1px solid rgb(7 6 12 / 0.14);
+  }
+
+  .ticket__field:last-child {
+    border-right: 0;
+  }
+
+  .ticket__field dt {
+    font-size: var(--fs-caption);
+    font-weight: 800;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: rgb(7 6 12 / 0.6);
+  }
+
+  .ticket__field dd {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .ticket__value {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 3.6vw, 3.75rem);
+    font-weight: 900;
+    line-height: 0.85;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+  }
+
+  .ticket__value.tbd {
+    color: rgb(7 6 12 / 0.45);
+  }
+
+  .ticket__field--hl .ticket__value {
+    font-size: clamp(2.6rem, 5vw, 5.25rem);
+    background: var(--gradient-virada);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .ticket__sub {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: rgb(7 6 12 / 0.62);
+  }
+
+  .ticket__stub {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    justify-items: center;
+    gap: 1rem;
+    padding: clamp(1.25rem, 2vw, 2rem) 1rem;
+    background: var(--gradient-virada-v);
+    color: var(--color-text);
+  }
+
+  .ticket__brand,
+  .ticket__admit {
+    writing-mode: vertical-rl;
+    font-family: var(--font-display);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .ticket__brand {
+    font-size: clamp(1.4rem, 2.4vw, 2.25rem);
+  }
+
+  .ticket__admit {
+    font-size: 0.875rem;
+    font-weight: 800;
+  }
+
+  .ticket__code {
+    width: 60%;
+    background: repeating-linear-gradient(
+      to bottom,
+      currentColor 0 2px,
+      transparent 2px 5px,
+      currentColor 5px 6px,
+      transparent 6px 10px,
+      currentColor 10px 13px,
+      transparent 13px 15px
+    );
+    opacity: 0.8;
+  }
+
+  @media (max-width: 900px) {
+    .ticket__main {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .ticket__field:nth-child(2) {
+      border-right: 0;
+    }
+
+    .ticket__field:nth-child(-n + 2) {
+      border-bottom: 1px solid rgb(7 6 12 / 0.14);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .ticket {
+      grid-template-columns: minmax(0, 1fr) 4.5rem;
+      --notch: 1rem;
+      mask:
+        radial-gradient(circle at calc(100% - 4.5rem) 0, transparent var(--notch), #000 calc(var(--notch) + 0.5px)) top / 100% 51% no-repeat,
+        radial-gradient(circle at calc(100% - 4.5rem) 100%, transparent var(--notch), #000 calc(var(--notch) + 0.5px)) bottom / 100% 51% no-repeat;
+    }
+
+    .ticket::before {
+      left: calc(100% - 4.5rem);
+    }
+
+    .ticket__main {
+      grid-template-columns: 1fr;
+    }
+
+    .ticket__field {
+      min-height: 0;
+      gap: 0.75rem;
+      border-right: 0;
+      border-bottom: 1px solid rgb(7 6 12 / 0.14);
+    }
+
+    .ticket__field:last-child {
+      border-bottom: 0;
+    }
+
+    .ticket__brand {
+      font-size: 1.35rem;
+    }
+  }
+</style>

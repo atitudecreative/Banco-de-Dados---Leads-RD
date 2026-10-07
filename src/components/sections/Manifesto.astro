@@ -1,0 +1,267 @@
+---
+import Button from '@/components/ui/Button.astro';
+import { primaryHref, primaryIsExternal } from '@/config/event';
+
+// Declaração principal: cada palavra "acende" conforme o scroll.
+const statement = 'Tem gente que vira o ano olhando pro céu. A gente vira o ano olhando pra Deus.';
+const highlight = new Set(['céu.', 'Deus.']);
+const words = statement.split(' ');
+
+const manifesto = [
+  'Uma noite pra agradecer pelo que passou.',
+  'Pra entregar nas mãos de Deus o que vem.',
+  'Pra cantar junto com milhares de vozes.',
+  'E começar o ano novo de pé — em adoração.',
+];
+---
+
+<section class="manifesto section" id="evento" aria-labelledby="evento-title">
+  <div class="container">
+    <p class="kicker" data-reveal="fade">O que é o MaraVira</p>
+    <h2 id="evento-title" class="statement">
+      {
+        words.map((w) => (
+          <span class:list={['w', { 'w--hl': highlight.has(w) }]}>{w} </span>
+        ))
+      }
+    </h2>
+
+    <ol class="lines" role="list">
+      {
+        manifesto.map((line, i) => (
+          <li class="lines__item" style={`--i:${i % 2}`} data-reveal>
+            <span class="lines__num" aria-hidden="true">
+              /0{i + 1}
+            </span>
+            <p class="lines__text">{line}</p>
+          </li>
+        ))
+      }
+    </ol>
+
+    <!-- O nome, decodificado -->
+    <div class="name" role="group" aria-labelledby="nome-title">
+      <h3 id="nome-title" class="sr-only">O significado do nome MaraVira</h3>
+      <div class="name__part" data-reveal>
+        <p class="name__word name__word--mara" aria-hidden="true">Mara</p>
+        <p class="name__def">
+          <strong>Mara</strong>, de Maracanã. De maravilha. Do Rio, a Cidade Maravilhosa.
+        </p>
+      </div>
+      <span class="name__op" aria-hidden="true">+</span>
+      <div class="name__part" data-reveal style="--i:1">
+        <p class="name__word name__word--vira" aria-hidden="true">Vira</p>
+        <p class="name__def">
+          <strong>Vira</strong>, de virada. De virar a página. De vida que vira.
+        </p>
+      </div>
+    </div>
+
+    <div class="name__result" data-reveal>
+      <p>
+        <span class="name__eq" aria-hidden="true">=</span>
+        <strong class="text-gradient">MaraVira.</strong>
+        <span>O Réveillon cristão do Rio de Janeiro.</span>
+      </p>
+      <Button href={primaryHref} external={primaryIsExternal} data-track="cta-manifesto">Quero ir</Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .manifesto {
+    background:
+      radial-gradient(50% 40% at 85% 10%, rgb(255 46 136 / 0.14), transparent 70%),
+      var(--color-background);
+  }
+
+  /* ---------- Declaração ------------------------------------------------ */
+  .statement {
+    max-width: 16ch;
+    margin-top: 1.5rem;
+    font-size: clamp(2.75rem, 8.2vw, 8rem);
+    font-weight: 900;
+    line-height: 0.92;
+  }
+
+  .w--hl {
+    background: var(--gradient-virada);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Palavra a palavra acende com o scroll (Chrome/Edge/Safari 26+).
+     Sem suporte, o texto simplesmente aparece completo. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .w {
+        animation: light-up linear both;
+        animation-timeline: view();
+        animation-range: entry 80% cover 42%;
+      }
+    }
+  }
+
+  @keyframes light-up {
+    from {
+      opacity: 0.16;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* ---------- Linhas do manifesto -------------------------------------- */
+  .lines {
+    display: grid;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    margin-block: clamp(5rem, 12vw, 10rem);
+  }
+
+  .lines__item {
+    display: grid;
+    grid-template-columns: 4rem minmax(0, 1fr);
+    align-items: baseline;
+    gap: 1rem;
+    max-width: 52rem;
+    padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    border-bottom: 1px solid var(--color-line);
+    margin-left: calc(var(--i) * clamp(0rem, 18vw, 22rem));
+  }
+
+  .lines__num {
+    font-size: var(--fs-caption);
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: var(--color-accent);
+  }
+
+  .lines__text {
+    font-family: var(--font-display);
+    font-size: var(--fs-h3);
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  /* ---------- Nome decodificado ---------------------------------------- */
+  .name {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: start;
+    gap: clamp(1rem, 3vw, 3rem);
+  }
+
+  .name__word {
+    font-family: var(--font-display);
+    font-size: clamp(5rem, 17vw, 16rem);
+    font-weight: 900;
+    line-height: 0.8;
+    text-transform: uppercase;
+  }
+
+  .name__word--mara {
+    color: transparent;
+    -webkit-text-stroke: 2px var(--color-text);
+  }
+
+  .name__word--vira {
+    background: var(--gradient-virada);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .name__def {
+    max-width: 24rem;
+    margin-top: 1.25rem;
+    font-size: var(--fs-lead);
+    line-height: 1.4;
+    color: var(--color-muted);
+  }
+
+  .name__def strong {
+    color: var(--color-text);
+  }
+
+  .name__op,
+  .name__eq {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 8vw, 7rem);
+    font-weight: 300;
+    line-height: 1;
+    color: var(--color-accent);
+  }
+
+  .name__op {
+    padding-top: clamp(1rem, 3vw, 3rem);
+  }
+
+  .name__result {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-top: clamp(3rem, 6vw, 5rem);
+    padding-top: clamp(2rem, 4vw, 3rem);
+    border-top: 1px solid var(--color-line);
+  }
+
+  .name__result p {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 1.25rem;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4.5vw, 4rem);
+    font-weight: 900;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .name__result p > span:last-child {
+    flex-basis: 100%;
+    font-size: 0.5em;
+    color: var(--color-muted);
+  }
+
+  .name__eq {
+    font-size: 1em;
+  }
+
+  @media (max-width: 760px) {
+    .lines__item {
+      grid-template-columns: 2.75rem minmax(0, 1fr);
+      margin-left: 0;
+    }
+
+    .name {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+
+    .name__part:nth-of-type(2) {
+      justify-self: end;
+      text-align: right;
+    }
+
+    .name__part:nth-of-type(2) .name__def {
+      margin-left: auto;
+    }
+
+    .name__op {
+      padding: 0;
+      justify-self: center;
+    }
+
+    .name__word--mara {
+      -webkit-text-stroke-width: 1.5px;
+    }
+
+    .name__result :global(.btn) {
+      width: 100%;
+    }
+  }
+</style>

@@ -1,0 +1,135 @@
+---
+/**
+ * REDES SOCIAIS — URLs em src/config/event.ts → socials.
+ * Sem URL, a linha aparece como "em breve" (não clicável).
+ */
+import { socialList } from '@/config/event';
+---
+
+<section class="social section" id="redes" aria-labelledby="redes-title">
+  <div class="container">
+    <header class="social__head">
+      <p class="kicker" data-reveal="fade">Redes</p>
+      <h2 id="redes-title" class="social__title" data-reveal="mask">
+        <span class="line"><span>Acompanhe</span></span>
+        <span class="line" style="--l:1"><span class="text-gradient">a contagem.</span></span>
+      </h2>
+    </header>
+
+    <ul class="social__list" role="list">
+      {
+        socialList.map((s, i) => (
+          <li data-reveal style={`--i:${i}`}>
+            {s.url ? (
+              <a class="sl" href={s.url} target="_blank" rel="noopener noreferrer">
+                <span class="sl__name">{s.label}</span>
+                <span class="sl__handle">{s.handle || 'Seguir'}</span>
+                <span class="sl__arrow" aria-hidden="true">
+                  ↗
+                </span>
+                <span class="sr-only"> (abre em nova aba)</span>
+              </a>
+            ) : (
+              <div class="sl sl--soon">
+                <span class="sl__name">{s.label}</span>
+                <span class="sl__handle">Em breve</span>
+              </div>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .social__head {
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+  }
+
+  .social__title {
+    margin-top: 1.25rem;
+    font-size: var(--fs-h2);
+    font-weight: 900;
+  }
+
+  .social__list {
+    border-top: 1px solid var(--color-line);
+  }
+
+  .sl {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 1.5rem;
+    padding: clamp(1rem, 2vw, 1.5rem) 0.25rem;
+    border-bottom: 1px solid var(--color-line);
+    text-decoration: none;
+    overflow: hidden;
+  }
+
+  .sl::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--gradient-virada);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .sl__name {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 9vw, 8rem);
+    font-weight: 900;
+    line-height: 0.9;
+    text-transform: uppercase;
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .sl__handle {
+    font-size: var(--fs-caption);
+    font-weight: 800;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .sl__arrow {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    line-height: 1;
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  a.sl:hover::before,
+  a.sl:focus-visible::before {
+    transform: scaleY(1);
+  }
+
+  a.sl:hover .sl__name,
+  a.sl:focus-visible .sl__name {
+    transform: translateX(1rem);
+  }
+
+  a.sl:hover .sl__handle,
+  a.sl:focus-visible .sl__handle {
+    color: var(--color-text);
+  }
+
+  a.sl:hover .sl__arrow,
+  a.sl:focus-visible .sl__arrow {
+    transform: rotate(45deg);
+  }
+
+  .sl--soon .sl__name {
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgb(246 243 238 / 0.5);
+  }
+
+  .sl--soon {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+</style>

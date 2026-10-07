@@ -1,0 +1,54 @@
+---
+/**
+ * MARAVIRA 2027 — página principal.
+ * A ordem das seções conta a história: impacto → expectativa → significado
+ * → experiência → quem → sentir → prova → onde → quando → conversão →
+ * dúvidas → comunidade → última chamada.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Nav from '@/components/sections/Nav.astro';
+import Hero from '@/components/sections/Hero.astro';
+import CountdownSection from '@/components/sections/CountdownSection.astro';
+import Manifesto from '@/components/sections/Manifesto.astro';
+import Experience from '@/components/sections/Experience.astro';
+import Lineup from '@/components/sections/Lineup.astro';
+import VideoSection from '@/components/sections/VideoSection.astro';
+import Gallery from '@/components/sections/Gallery.astro';
+import Venue from '@/components/sections/Venue.astro';
+import EventInfo from '@/components/sections/EventInfo.astro';
+import CTASection from '@/components/sections/CTASection.astro';
+import FAQ from '@/components/sections/FAQ.astro';
+import Social from '@/components/sections/Social.astro';
+import Footer from '@/components/sections/Footer.astro';
+import Marquee from '@/components/ui/Marquee.astro';
+import StickyCta from '@/components/ui/StickyCta.astro';
+import { event, dateParts } from '@/config/event';
+
+const band = ['Viva a virada', `${dateParts.short}.${dateParts.year}`, event.city, `${event.eventName} ${event.eventYear}`];
+---
+
+<BaseLayout eventSchema>
+  <Nav />
+  <main id="conteudo">
+    <Hero />
+    <CountdownSection />
+    <Marquee items={band} tilt={-2} />
+    <Manifesto />
+    <Experience />
+    <Lineup />
+    <VideoSection />
+    <Gallery />
+    <Marquee items={['Louvor', 'Oração', 'Celebração', 'Família', 'Virada', 'Comunhão']} variant="outline" reverse speed={46} />
+    <Venue />
+    <EventInfo />
+    <CTASection />
+    <FAQ />
+    <Social />
+  </main>
+  <Footer />
+  <StickyCta />
+</BaseLayout>
+
+<script>
+  import '@/scripts/main';
+</script>

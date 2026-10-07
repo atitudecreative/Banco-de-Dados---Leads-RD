@@ -1,0 +1,233 @@
+---
+/**
+ * FAQ — accordion nativo (<details name="faq">): acessível por teclado e
+ * leitor de tela sem JS, abre um por vez. Perguntas/respostas em
+ * src/config/event.ts → faq. `pending: true` exibe o selo "Em breve".
+ */
+import { event } from '@/config/event';
+---
+
+<section class="faq section" id="faq" aria-labelledby="faq-title">
+  <div class="container faq__grid">
+    <header class="faq__head">
+      <p class="kicker" data-reveal="fade">FAQ</p>
+      <h2 id="faq-title" class="faq__title" data-reveal="mask">
+        <span class="line"><span>Perguntas</span></span>
+        <span class="line" style="--l:1"><span class="text-outline">frequentes.</span></span>
+      </h2>
+      <p class="faq__note" data-reveal>
+        O MaraVira {event.eventYear} está sendo preparado. Respostas marcadas como <em>em breve</em> serão atualizadas assim que forem oficiais.
+      </p>
+    </header>
+
+    <div class="faq__list">
+      {
+        event.faq.map((item, i) => (
+          <details class="qa" name="faq" data-reveal style={`--i:${i % 3}`}>
+            <summary>
+              <span class="qa__num" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span class="qa__q">{item.question}</span>
+              {item.pending && <span class="qa__tag">Em breve</span>}
+              <span class="qa__icon" aria-hidden="true" />
+            </summary>
+            <div class="qa__a">
+              <p>{item.answer}</p>
+            </div>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: clamp(2.5rem, 6vw, 6rem);
+    align-items: start;
+  }
+
+  .faq__head {
+    position: sticky;
+    top: calc(var(--nav-h) + 2rem);
+  }
+
+  .faq__title {
+    margin-top: 1.25rem;
+    font-size: var(--fs-h2);
+    font-weight: 900;
+  }
+
+  .faq__note {
+    max-width: 24rem;
+    margin-top: 1.5rem;
+    color: var(--color-muted);
+  }
+
+  .faq__note em {
+    font-style: normal;
+    color: var(--color-accent);
+  }
+
+  .faq__list {
+    border-top: 1px solid var(--color-line);
+  }
+
+  .qa {
+    border-bottom: 1px solid var(--color-line);
+    interpolate-size: allow-keywords;
+  }
+
+  .qa summary {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 1rem;
+    padding-block: 1.5rem;
+    cursor: pointer;
+    list-style: none;
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+
+  .qa summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .qa__num {
+    font-size: var(--fs-caption);
+    font-weight: 800;
+    color: var(--color-accent);
+  }
+
+  .qa__q {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 2.4vw, 2.1rem);
+    font-weight: 800;
+    line-height: 1.02;
+    text-transform: uppercase;
+  }
+
+  .qa__tag {
+    padding: 0.3rem 0.55rem;
+    font-size: 0.6875rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--color-accent);
+    border: 1px solid rgb(255 178 63 / 0.5);
+  }
+
+  .qa__icon {
+    position: relative;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--color-line);
+    border-radius: 50%;
+    transition:
+      transform var(--dur) var(--ease-out),
+      background var(--dur) var(--ease-out),
+      border-color var(--dur) var(--ease-out);
+  }
+
+  .qa__icon::before,
+  .qa__icon::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0.9rem;
+    height: 2px;
+    background: currentColor;
+    translate: -50% -50%;
+  }
+
+  .qa__icon::after {
+    rotate: 90deg;
+  }
+
+  @media (hover: hover) {
+    .qa summary:hover {
+      color: var(--color-accent);
+    }
+
+    .qa summary:hover .qa__icon {
+      border-color: var(--color-accent);
+    }
+  }
+
+  .qa summary:focus-visible {
+    outline-offset: 2px;
+  }
+
+  .qa[open] .qa__icon {
+    transform: rotate(135deg);
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  .qa__a {
+    padding: 0 3.5rem 1.75rem 3.5rem;
+    font-size: var(--fs-body);
+    color: var(--color-muted);
+  }
+
+  /* Abertura suave onde houver suporte (Chrome 131+); senão, instantânea. */
+  @media (prefers-reduced-motion: no-preference) {
+    .qa::details-content {
+      block-size: 0;
+      overflow: hidden;
+      transition:
+        block-size var(--dur) var(--ease-out),
+        content-visibility var(--dur) allow-discrete;
+    }
+
+    .qa[open]::details-content {
+      block-size: auto;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .faq__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .faq__head {
+      position: static;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .qa summary {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas:
+        'q icon'
+        'tag icon';
+      row-gap: 0.5rem;
+    }
+
+    .qa__num {
+      display: none;
+    }
+
+    .qa__q {
+      grid-area: q;
+    }
+
+    .qa__tag {
+      grid-area: tag;
+      justify-self: start;
+    }
+
+    .qa__icon {
+      grid-area: icon;
+    }
+
+    .qa__a {
+      padding-inline: 0 1rem;
+    }
+  }
+</style>

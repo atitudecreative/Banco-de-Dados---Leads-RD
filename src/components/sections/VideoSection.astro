@@ -1,0 +1,274 @@
+---
+/**
+ * VÍDEO OFICIAL. Configure em src/config/event.ts → video.url
+ * (YouTube, Vimeo ou arquivo próprio em /public). O player só é carregado
+ * quando a pessoa clica em play — zero custo no carregamento da página.
+ */
+import { Image } from 'astro:assets';
+import poster from '@/assets/video-poster.jpg';
+import { event } from '@/config/event';
+
+function parseVideo(url: string): { kind: 'youtube' | 'vimeo' | 'file'; src: string } | null {
+  if (!url) return null;
+  const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/);
+  if (yt) return { kind: 'youtube', src: `https://www.youtube-nocookie.com/embed/${yt[1]}?autoplay=1&rel=0&modestbranding=1&playsinline=1` };
+  const vm = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vm) return { kind: 'vimeo', src: `https://player.vimeo.com/video/${vm[1]}?autoplay=1&dnt=1` };
+  return { kind: 'file', src: url };
+}
+
+const video = parseVideo(event.video.url);
+const ring = video ? 'ASSISTA ✦ VÍDEO OFICIAL ✦ ASSISTA ✦ VÍDEO OFICIAL ✦' : 'VÍDEO OFICIAL ✦ EM BREVE ✦ VÍDEO OFICIAL ✦ EM BREVE ✦';
+---
+
+<section class="video" id="video" aria-labelledby="video-title">
+  <div class="video__media" aria-hidden="true">
+    <Image src={poster} alt="" widths={[768, 1280, 1920, 2400]} sizes="100vw" loading="lazy" class="video__poster" />
+  </div>
+  <div class="video__shade" aria-hidden="true"></div>
+
+  <div class="container video__inner">
+    <div>
+      <p class="kicker" data-reveal="fade">Vídeo oficial</p>
+      <h2 id="video-title" class="video__title" data-reveal="mask">
+        <span class="line"><span>Sinta a virada</span></span>
+        <span class="line" style="--l:1"><span class="text-gradient">antes dela chegar.</span></span>
+      </h2>
+    </div>
+
+    <button
+      class:list={['play', { 'play--soon': !video }]}
+      type="button"
+      data-video-open
+      data-kind={video?.kind}
+      data-src={video?.src}
+      aria-haspopup={video ? 'dialog' : undefined}
+      disabled={!video}
+      data-reveal="scale">
+      <svg class="play__ring" viewBox="0 0 200 200" aria-hidden="true">
+        <defs><path id="play-circle" d="M100 100m-84 0a84 84 0 1 1 168 0a84 84 0 1 1-168 0"></path></defs>
+        <text><textPath href="#play-circle" textLength="526" lengthAdjust="spacing">{ring}</textPath></text>
+      </svg>
+      <span class="play__core" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="34" height="34"><path d="M7 4.5v15l13-7.5z" fill="currentColor"></path></svg>
+      </span>
+      <span class="sr-only">{video ? `Assistir: ${event.video.title}` : 'Vídeo oficial em breve'}</span>
+    </button>
+  </div>
+</section>
+
+{
+  video && (
+    <dialog class="vmodal" aria-label={event.video.title} data-video-modal>
+      <button class="vmodal__close" type="button" data-video-close>
+        Fechar
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.4" />
+        </svg>
+      </button>
+      <div class="vmodal__frame" data-video-frame data-title={event.video.title} />
+    </dialog>
+  )
+}
+
+<style>
+  .video {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    align-items: end;
+    min-height: min(100svh, 62rem);
+    padding-block: var(--section-y);
+    overflow: hidden;
+  }
+
+  .video__media {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+  }
+
+  .video__media :global(.video__poster) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .video__media {
+        animation: slow-zoom linear both;
+        animation-timeline: view();
+      }
+    }
+  }
+
+  @keyframes slow-zoom {
+    from {
+      transform: scale(1.18);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+
+  .video__shade {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(to bottom, var(--color-background) 0%, transparent 30%, transparent 55%, var(--color-background) 100%),
+      linear-gradient(to right, rgb(7 6 12 / 0.75), transparent 65%);
+  }
+
+  .video__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 3rem;
+  }
+
+  .video__title {
+    margin-top: 1.25rem;
+    font-size: var(--fs-h2);
+    font-weight: 900;
+  }
+
+  /* ---------- Botão play gigante --------------------------------------- */
+  .play {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: clamp(9rem, 16vw, 14rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    color: var(--color-text);
+  }
+
+  .play__ring {
+    position: absolute;
+    inset: 0;
+    animation: spin 16s linear infinite;
+  }
+
+  .play__ring text {
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    fill: currentColor;
+  }
+
+  .play__core {
+    display: grid;
+    place-items: center;
+    width: 52%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--gradient-virada);
+    box-shadow: 0 0 60px rgb(255 46 136 / 0.55);
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .play:hover .play__core,
+  .play:focus-visible .play__core {
+    transform: scale(1.12);
+  }
+
+  .play:active .play__core {
+    transform: scale(0.96);
+  }
+
+  .play:focus-visible {
+    outline-offset: 6px;
+    border-radius: 50%;
+  }
+
+  .play--soon {
+    cursor: default;
+  }
+
+  .play--soon .play__core {
+    background: var(--color-surface-2);
+    box-shadow: none;
+    color: var(--color-muted);
+  }
+
+  @keyframes spin {
+    to {
+      rotate: 360deg;
+    }
+  }
+
+  /* ---------- Modal ---------------------------------------------------- */
+  .vmodal {
+    width: min(92vw, 1280px);
+    max-width: none;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--color-text);
+    overflow: visible;
+  }
+
+  .vmodal::backdrop {
+    background: rgb(7 6 12 / 0.92);
+    backdrop-filter: blur(8px);
+  }
+
+  .vmodal[open] {
+    animation: modal-in 500ms var(--ease-out);
+  }
+
+  @keyframes modal-in {
+    from {
+      opacity: 0;
+      transform: scale(0.94);
+    }
+  }
+
+  .vmodal__close {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    margin: 0 0 0.75rem auto;
+    font-size: var(--fs-caption);
+    font-weight: 800;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+  }
+
+  .vmodal__frame {
+    aspect-ratio: 16 / 9;
+    background: #000;
+  }
+
+  .vmodal__frame :global(iframe),
+  .vmodal__frame :global(video) {
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  @media (max-width: 640px) {
+    .video {
+      min-height: 85svh;
+    }
+
+    .video__inner {
+      gap: 2rem;
+    }
+
+    .play {
+      width: 8rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .play__ring {
+      animation: none;
+    }
+  }
+</style>

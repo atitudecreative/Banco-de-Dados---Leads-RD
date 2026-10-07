@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# TODO: ajuste o domínio se for diferente
+Sitemap: https://maravira.com.br/sitemap.xml

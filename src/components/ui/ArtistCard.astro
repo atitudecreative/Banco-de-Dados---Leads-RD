@@ -1,0 +1,220 @@
+---
+/**
+ * Um nome do lineup. Herda o tamanho de fonte da linha (tier) do cartaz.
+ * - Confirmado: nome sólido; foto aparece no hover/foco (desktop) ou como
+ *   miniatura (mobile); categoria, descrição e redes abaixo.
+ * - Não confirmado (placeholder): nome em contorno + selo "a anunciar".
+ */
+import { Image } from 'astro:assets';
+import type { Artist } from '@/config/event';
+import { event } from '@/config/event';
+
+interface Props {
+  artist: Artist;
+}
+const { artist: a } = Astro.props;
+const socials = Object.entries(a.socials ?? {}).filter(([, url]) => Boolean(url)) as [keyof typeof event.socials, string][];
+---
+
+<article class:list={['artist', { 'artist--tbd': !a.confirmed }]} tabindex={a.confirmed && a.photo ? 0 : undefined}>
+  {
+    a.confirmed && a.photo && (
+      <figure class="artist__photo" aria-hidden="true">
+        {typeof a.photo === 'string' ? (
+          <img src={a.photo} alt="" width="480" height="600" loading="lazy" decoding="async" />
+        ) : (
+          <Image src={a.photo} alt="" widths={[240, 480]} sizes="(max-width: 760px) 3.5rem, 18rem" loading="lazy" />
+        )}
+      </figure>
+    )
+  }
+  <h3 class="artist__name">
+    {a.name}
+    {!a.confirmed && <span class="sr-only"> (a anunciar)</span>}
+  </h3>
+  {
+    a.confirmed ? (
+      <div class="artist__meta">
+        <p>
+          <strong>{a.category}</strong>
+          {a.description && <span> — {a.description}</span>}
+        </p>
+        {socials.length > 0 && (
+          <ul role="list" class="artist__socials">
+            {socials.map(([key, url]) => (
+              <li>
+                <a href={url} target="_blank" rel="noopener noreferrer">
+                  {event.socials[key]?.label ?? key}
+                  <span class="sr-only"> de {a.name} (abre em nova aba)</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    ) : (
+      <span class="artist__tag" aria-hidden="true">
+        a anunciar
+      </span>
+    )
+  }
+</article>
+
+<style>
+  .artist {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    outline-offset: 0.1em;
+  }
+
+  .artist__name {
+    font-size: 1em;
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.005em;
+    white-space: nowrap;
+    transition:
+      color var(--dur) var(--ease-out),
+      -webkit-text-stroke-color var(--dur) var(--ease-out);
+  }
+
+  .artist--tbd .artist__name {
+    color: transparent;
+    -webkit-text-stroke: max(1px, 0.012em) rgb(246 243 238 / 0.55);
+  }
+
+  .artist__tag {
+    position: absolute;
+    top: -0.2em;
+    right: -0.45em;
+    padding: 0.35em 0.6em;
+    font-family: var(--font-body);
+    font-size: clamp(0.5625rem, 0.5rem + 0.2vw, 0.75rem);
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-ink);
+    background: var(--color-accent);
+    rotate: 6deg;
+    transition: rotate var(--dur) var(--ease-out);
+  }
+
+  @media (hover: hover) {
+    .artist--tbd:hover .artist__name {
+      -webkit-text-stroke-color: var(--color-text);
+    }
+
+    .artist--tbd:hover .artist__tag {
+      rotate: -4deg;
+    }
+  }
+
+  .artist__meta {
+    max-width: 22rem;
+    margin-top: 0.35rem;
+    font-family: var(--font-body);
+    font-size: var(--fs-caption);
+    line-height: 1.4;
+    text-align: center;
+    color: var(--color-muted);
+  }
+
+  .artist__meta strong {
+    color: var(--color-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .artist__socials {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 0.35rem;
+  }
+
+  .artist__socials a {
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  /* Foto: aparece no hover/foco, ancorada acima do nome */
+  .artist__photo {
+    position: absolute;
+    bottom: 80%;
+    left: 50%;
+    z-index: 5;
+    width: clamp(10rem, 18vw, 18rem);
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, 1rem) rotate(-4deg) scale(0.9);
+    transition:
+      opacity var(--dur) var(--ease-out),
+      transform var(--dur) var(--ease-out);
+    box-shadow: 0 30px 80px rgb(0 0 0 / 0.6);
+  }
+
+  .artist__photo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .artist:hover .artist__photo,
+  .artist:focus-visible .artist__photo {
+    opacity: 1;
+    transform: translate(-50%, 0) rotate(-4deg);
+  }
+
+  .artist:not(.artist--tbd):hover .artist__name {
+    background: var(--gradient-virada);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  @media (max-width: 640px) {
+    .artist--tbd {
+      flex-direction: row;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .artist__tag {
+      position: static;
+      rotate: none;
+      padding: 0.3em 0.5em;
+    }
+  }
+
+  @media (hover: none), (max-width: 760px) {
+    .artist {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.3em;
+    }
+
+    .artist__photo {
+      position: static;
+      width: 0.9em;
+      height: 0.9em;
+      border-radius: 50%;
+      opacity: 1;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .artist__meta {
+      flex-basis: 100%;
+      text-align: left;
+    }
+
+    .artist__socials {
+      justify-content: flex-start;
+    }
+  }
+</style>

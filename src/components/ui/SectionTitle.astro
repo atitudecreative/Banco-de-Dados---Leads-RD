@@ -1,0 +1,52 @@
+---
+/**
+ * Título de seção editorial: kicker numerado + título em linhas que se
+ * revelam por máscara. Passe `lines` (uma string por linha visual).
+ */
+interface Props {
+  kicker?: string;
+  lines: string[];
+  /** Índices de linhas que recebem o gradiente da virada. */
+  accent?: number[];
+  /** Índices de linhas em contorno (outline). */
+  outline?: number[];
+  as?: 'h1' | 'h2' | 'h3';
+  id?: string;
+  align?: 'start' | 'center';
+  class?: string;
+}
+const { kicker, lines, accent = [], outline = [], as: Tag = 'h2', id, align = 'start', class: cls } = Astro.props;
+---
+
+<header class:list={['st', `st--${align}`, cls]}>
+  {kicker && <p class="kicker" data-reveal="fade">{kicker}</p>}
+  <Tag class="st__title" id={id} data-reveal="mask">
+    {
+      lines.map((line, l) => (
+        <span class="line" style={`--l:${l}`}>
+          <span class:list={[{ 'text-gradient': accent.includes(l), 'text-outline': outline.includes(l) }]}>{line}</span>
+        </span>
+      ))
+    }
+  </Tag>
+</header>
+
+<style>
+  .st {
+    display: grid;
+    gap: 1.25rem;
+    margin-bottom: clamp(2.5rem, 6vw, 5rem);
+  }
+
+  .st--center {
+    justify-items: center;
+    text-align: center;
+  }
+
+  .st__title {
+    font-size: var(--fs-h2);
+    font-weight: 900;
+    line-height: var(--lh-heading);
+    letter-spacing: -0.005em;
+  }
+</style>

@@ -1,0 +1,73 @@
+---
+/**
+ * Silhueta de multidão gerada em build (determinística, sem imagem externa).
+ * Cabeças, ombros, braços erguidos e luzes de celular — o "nós" do MaraVira.
+ * Tudo vira um único <path> por camada: leve para renderizar.
+ */
+interface Props {
+  seed?: number;
+  class?: string;
+  /** Quantidade relativa de luzes de celular. */
+  lights?: number;
+}
+const { seed = 7, class: cls, lights = 0.35 } = Astro.props;
+
+let s = seed >>> 0;
+const r = () => {
+  s = (s * 1664525 + 1013904223) >>> 0;
+  return s / 4294967296;
+};
+
+const W = 1600;
+const H = 320;
+const layers: { d: string; fill: string }[] = [];
+const phoneLights: { x: number; y: number; r: number; o: number }[] = [];
+
+const rows = [
+  { size: 20, y: H - 120, fill: '#1b1633', arms: 0.3 },
+  { size: 27, y: H - 82, fill: '#120f22', arms: 0.32 },
+  { size: 36, y: H - 44, fill: '#0b0915', arms: 0.26 },
+  { size: 48, y: H - 4, fill: '#07060c', arms: 0.14 },
+];
+
+for (const row of rows) {
+  let d = '';
+  const n = Math.ceil(W / (row.size * 1.35)) + 2;
+  for (let i = 0; i < n; i++) {
+    const sz = row.size * (0.85 + r() * 0.3);
+    const x = (i / (n - 1)) * W + (r() - 0.5) * sz * 0.8;
+    const headY = row.y - sz * (1.9 + r() * 0.45);
+    const hr = sz * 0.42;
+    // cabeça
+    d += `M${(x - hr).toFixed(1)} ${headY.toFixed(1)}a${hr.toFixed(1)} ${(hr * 1.15).toFixed(1)} 0 1 0 ${(hr * 2).toFixed(1)} 0a${hr.toFixed(1)} ${(hr * 1.15).toFixed(1)} 0 1 0 ${(-hr * 2).toFixed(1)} 0Z`;
+    // ombros/tronco
+    const sh = sz * 1.05;
+    const top = headY + hr * 1.05;
+    d += `M${(x - sh).toFixed(1)} ${H}V${(top + sz * 0.55).toFixed(1)}Q${(x - sh).toFixed(1)} ${top.toFixed(1)} ${(x - sh * 0.35).toFixed(1)} ${top.toFixed(1)}H${(x + sh * 0.35).toFixed(1)}Q${(x + sh).toFixed(1)} ${top.toFixed(1)} ${(x + sh).toFixed(1)} ${(top + sz * 0.55).toFixed(1)}V${H}Z`;
+    // braços erguidos (um ou dois)
+    if (r() < row.arms) {
+      const both = r() < 0.35;
+      const sides = both ? [-1, 1] : [r() < 0.5 ? -1 : 1];
+      for (const dir of sides) {
+        const sx = x + dir * sh * 0.72;
+        const sy = top + sz * 0.25;
+        const ex = sx + dir * sz * (0.25 + r() * 0.5);
+        const ey = headY - sz * (1.6 + r() * 0.9);
+        const w = sz * 0.2;
+        d += `M${(sx - w).toFixed(1)} ${sy.toFixed(1)}L${(ex - w * 0.8).toFixed(1)} ${ey.toFixed(1)}L${(ex + w * 0.8).toFixed(1)} ${(ey - w * 0.3).toFixed(1)}L${(sx + w).toFixed(1)} ${sy.toFixed(1)}Z`;
+        // mão
+        d += `M${(ex - w * 1.1).toFixed(1)} ${ey.toFixed(1)}a${(w * 1.1).toFixed(1)} ${(w * 1.3).toFixed(1)} 0 1 0 ${(w * 2.2).toFixed(1)} 0a${(w * 1.1).toFixed(1)} ${(w * 1.3).toFixed(1)} 0 1 0 ${(-w * 2.2).toFixed(1)} 0Z`;
+        if (r() < lights) phoneLights.push({ x: ex, y: ey - w * 1.6, r: w * 0.7, o: 0.5 + r() * 0.5 });
+      }
+    }
+  }
+  layers.push({ d, fill: row.fill });
+}
+---
+
+<svg class={cls} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+  {layers.map((l) => <path d={l.d} fill={l.fill} />)}
+  <g class="crowd-lights">
+    {phoneLights.map((p, i) => <circle cx={p.x.toFixed(1)} cy={p.y.toFixed(1)} r={p.r.toFixed(1)} fill="#fff" opacity={p.o.toFixed(2)} style={`--d:${(i % 7) * 0.6}s`} />)}
+  </g>
+</svg>
