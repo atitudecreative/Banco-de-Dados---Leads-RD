@@ -35,6 +35,8 @@ export interface Artist {
   photo?: ImageMetadata | string;
   /** 1 = headliner (nome gigante), 2 = destaque, 3 = demais atrações. */
   tier: 1 | 2 | 3;
+  /** Cor do card, como nos posts oficiais de convidados. */
+  theme?: 'pink' | 'lavender' | 'teal' | 'blue' | 'orange' | 'coral';
   socials?: Partial<Record<SocialKey, string>>;
 }
 
@@ -50,7 +52,12 @@ export const event = {
   // IDENTIDADE
   // --------------------------------------------------------------------------
   eventName: 'MaraVira',
+  /** Ano que começa na virada — "MaraVira 27". */
   eventYear: '2027',
+  /** Assinatura oficial da identidade visual. */
+  edition: '2ª Edição',
+  tagline: 'A Virada Maravilhosa',
+  hashtag: '#MaraVira2027',
   organizer: 'Igreja Batista Atitude',
   organizerUrl: '', // TODO: site oficial da Igreja Batista Atitude
   city: 'Rio de Janeiro',
@@ -62,11 +69,13 @@ export const event = {
   /**
    * Data do evento (AAAA-MM-DD) no fuso America/Sao_Paulo.
    *
-   * ⚠️ ATENÇÃO: o briefing define 31/12/2027. Se "MaraVira 2027" significar a
-   *    virada PARA 2027, a data correta é 2026-12-31. Confirme e ajuste aqui —
-   *    countdown, textos e schema.org usam este valor.
+   * ⚠️ CONFIRMAR: a apresentação da identidade diz que a 1ª edição foi a
+   *    virada de 2025 para 2026 e que esta é a 2ª edição ("MaraVira 27"),
+   *    ou seja, a virada de 2026 para 2027 → 2026-12-31.
+   *    O briefing escrito citava 31/12/2027; se for essa a data, troque aqui.
+   *    Countdown, textos e schema.org usam este valor.
    */
-  eventDate: '2027-12-31',
+  eventDate: '2026-12-31',
   /** Horário de início no formato "HH:MM". Vazio = "A definir". */
   eventTime: '', // TODO: horário oficial de início
   /** Horário de abertura dos portões "HH:MM". Vazio = "A definir". */
@@ -160,7 +169,7 @@ export const event = {
    * Maracanã, 31/12/2025). Confirme com a organização antes de publicar.
    * Deixe `null` para ocultar as menções.
    */
-  previousEdition: { year: '2025', venue: 'Maracanã' } as { year: string; venue: string } | null,
+  previousEdition: { year: '2025', label: 'virada de 2025 para 2026', venue: 'Maracanã' } as { year: string; label: string; venue: string } | null,
 
   // --------------------------------------------------------------------------
   // SEO
@@ -168,9 +177,9 @@ export const event = {
   seo: {
     /** Domínio final, sem barra no fim. Usado em canonical/OG/sitemap. */
     siteUrl: 'https://maravira.com.br', // TODO: confirmar domínio oficial
-    title: 'MaraVira 2027 — O Rio vira o ano em adoração',
+    title: 'MaraVira 27 — A Virada Maravilhosa | Réveillon cristão no Rio',
     description:
-      'MaraVira 2027: o Réveillon cristão do Rio de Janeiro. Louvor, oração e festa para milhares de pessoas virarem o ano juntas na presença de Deus. Uma realização da Igreja Batista Atitude.',
+      'MaraVira 27, 2ª edição: o Réveillon cristão do Rio de Janeiro. Louvor, Palavra e celebração para milhares de pessoas virarem o ano juntas na presença de Deus. Uma realização da Igreja Batista Atitude.',
     ogImage: '/og-maravira-2027.jpg',
     locale: 'pt_BR',
     twitterHandle: '', // TODO: @ do X/Twitter, se houver
@@ -183,14 +192,15 @@ export const event = {
   // o estado "anúncio em breve".
   // --------------------------------------------------------------------------
   artists: [
-    { confirmed: false, tier: 1, name: 'Atração 01', category: 'A anunciar', description: 'Headliner — a anunciar' },
-    { confirmed: false, tier: 1, name: 'Atração 02', category: 'A anunciar', description: 'Headliner — a anunciar' },
-    { confirmed: false, tier: 2, name: 'Atração 03', category: 'A anunciar', description: 'A anunciar' },
-    { confirmed: false, tier: 2, name: 'Atração 04', category: 'A anunciar', description: 'A anunciar' },
-    { confirmed: false, tier: 2, name: 'Atração 05', category: 'A anunciar', description: 'A anunciar' },
-    { confirmed: false, tier: 3, name: 'Atração 06', category: 'A anunciar', description: 'A anunciar' },
-    { confirmed: false, tier: 3, name: 'Atração 07', category: 'A anunciar', description: 'A anunciar' },
-    { confirmed: false, tier: 3, name: 'Atração 08', category: 'A anunciar', description: 'A anunciar' },
+    // Nomes presentes nos posts oficiais de convidados (identidade visual MaraVira 27).
+    // TODO: adicionar fotos (src/assets/artists/, retrato 4:5) e redes sociais.
+    { confirmed: true, tier: 1, theme: 'teal', name: 'Morada', category: 'Louvor', description: '' },
+    { confirmed: true, tier: 1, theme: 'lavender', name: 'Maria Marçal', category: 'Louvor', description: '' },
+    { confirmed: true, tier: 1, theme: 'blue', name: 'Fernandinho', category: 'Louvor', description: '' },
+    { confirmed: true, tier: 1, theme: 'pink', name: 'Pr. Josué Valandro Jr.', category: 'Palavra', description: '' },
+    // Placeholders — vagas ainda não anunciadas.
+    { confirmed: false, tier: 2, theme: 'orange', name: 'A anunciar', category: 'Em breve', description: '' },
+    { confirmed: false, tier: 2, theme: 'coral', name: 'A anunciar', category: 'Em breve', description: '' },
   ] satisfies Artist[] as Artist[],
 
   // --------------------------------------------------------------------------

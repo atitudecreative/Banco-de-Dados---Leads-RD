@@ -83,7 +83,7 @@ const fields = [
     content: '';
     position: absolute;
     inset: var(--notch) auto var(--notch) calc(100% - clamp(6rem, 13vw, 11rem));
-    border-left: 2px dashed rgb(7 6 12 / 0.35);
+    border-left: 2px dashed rgb(33 15 40 / 0.35);
   }
 
   .ticket__main {
@@ -97,7 +97,7 @@ const fields = [
     gap: 2.5rem;
     min-height: clamp(12rem, 22vw, 19rem);
     padding: clamp(1.25rem, 2.5vw, 2.25rem);
-    border-right: 1px solid rgb(7 6 12 / 0.14);
+    border-right: 1px solid rgb(33 15 40 / 0.14);
   }
 
   .ticket__field:last-child {
@@ -109,7 +109,7 @@ const fields = [
     font-weight: 800;
     letter-spacing: var(--tracking-caps);
     text-transform: uppercase;
-    color: rgb(7 6 12 / 0.6);
+    color: rgb(33 15 40 / 0.6);
   }
 
   .ticket__field dd {
@@ -119,19 +119,21 @@ const fields = [
 
   .ticket__value {
     font-family: var(--font-display);
-    font-size: clamp(2rem, 3.6vw, 3.75rem);
+    font-style: italic;
+    font-size: clamp(1.6rem, 2.7vw, 2.9rem);
     font-weight: 900;
-    line-height: 0.85;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
     text-transform: uppercase;
-    overflow-wrap: anywhere;
+    text-wrap: balance;
   }
 
   .ticket__value.tbd {
-    color: rgb(7 6 12 / 0.45);
+    color: rgb(33 15 40 / 0.45);
   }
 
   .ticket__field--hl .ticket__value {
-    font-size: clamp(2.6rem, 5vw, 5.25rem);
+    font-size: clamp(2.6rem, 4.6vw, 4.75rem);
     background: var(--gradient-virada);
     -webkit-background-clip: text;
     background-clip: text;
@@ -141,7 +143,7 @@ const fields = [
   .ticket__sub {
     font-size: 0.875rem;
     font-weight: 700;
-    color: rgb(7 6 12 / 0.62);
+    color: rgb(33 15 40 / 0.62);
   }
 
   .ticket__stub {
@@ -197,7 +199,7 @@ const fields = [
     }
 
     .ticket__field:nth-child(-n + 2) {
-      border-bottom: 1px solid rgb(7 6 12 / 0.14);
+      border-bottom: 1px solid rgb(33 15 40 / 0.14);
     }
   }
 
@@ -222,7 +224,7 @@ const fields = [
       min-height: 0;
       gap: 0.75rem;
       border-right: 0;
-      border-bottom: 1px solid rgb(7 6 12 / 0.14);
+      border-bottom: 1px solid rgb(33 15 40 / 0.14);
     }
 
     .ticket__field:last-child {

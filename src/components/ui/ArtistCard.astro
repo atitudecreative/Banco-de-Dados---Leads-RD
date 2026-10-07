@@ -1,9 +1,9 @@
 ---
 /**
- * Um nome do lineup. Herda o tamanho de fonte da linha (tier) do cartaz.
- * - Confirmado: nome sólido; foto aparece no hover/foco (desktop) ou como
- *   miniatura (mobile); categoria, descrição e redes abaixo.
- * - Não confirmado (placeholder): nome em contorno + selo "a anunciar".
+ * Card de atração no formato dos posts oficiais "convidados individuais":
+ * fundo na cor do tema, palmeiras roxas, pássaros, foto ao centro, arco azul
+ * e o nome em itálico pesado. Sem foto, o card continua completo.
+ * - confirmed: false → placeholder "A anunciar".
  */
 import { Image } from 'astro:assets';
 import type { Artist } from '@/config/event';
@@ -11,210 +11,282 @@ import { event } from '@/config/event';
 
 interface Props {
   artist: Artist;
+  index?: number;
 }
-const { artist: a } = Astro.props;
+const { artist: a, index = 0 } = Astro.props;
+const theme = a.theme ?? 'pink';
 const socials = Object.entries(a.socials ?? {}).filter(([, url]) => Boolean(url)) as [keyof typeof event.socials, string][];
+// Nomes longos ("Pr. Josué Valandro Jr.") ganham corpo menor
+const long = a.name.length > 14;
 ---
 
-<article class:list={['artist', { 'artist--tbd': !a.confirmed }]} tabindex={a.confirmed && a.photo ? 0 : undefined}>
-  {
-    a.confirmed && a.photo && (
-      <figure class="artist__photo" aria-hidden="true">
-        {typeof a.photo === 'string' ? (
-          <img src={a.photo} alt="" width="480" height="600" loading="lazy" decoding="async" />
+<article class:list={['ac', `ac--${theme}`, { 'ac--tbd': !a.confirmed, 'ac--long': long }]} style={`--n:${index}`}>
+  <div class="ac__art" aria-hidden="true">
+    <span class="ac__palm ac__palm--l"></span>
+    <span class="ac__palm ac__palm--r"></span>
+    <span class="ac__birds"></span>
+    {
+      a.confirmed && a.photo ? (
+        typeof a.photo === 'string' ? (
+          <img class="ac__photo" src={a.photo} alt="" width="480" height="600" loading="lazy" decoding="async" />
         ) : (
-          <Image src={a.photo} alt="" widths={[240, 480]} sizes="(max-width: 760px) 3.5rem, 18rem" loading="lazy" />
-        )}
-      </figure>
-    )
-  }
-  <h3 class="artist__name">
-    {a.name}
-    {!a.confirmed && <span class="sr-only"> (a anunciar)</span>}
-  </h3>
-  {
-    a.confirmed ? (
-      <div class="artist__meta">
-        <p>
-          <strong>{a.category}</strong>
-          {a.description && <span> — {a.description}</span>}
-        </p>
-        {socials.length > 0 && (
-          <ul role="list" class="artist__socials">
-            {socials.map(([key, url]) => (
-              <li>
-                <a href={url} target="_blank" rel="noopener noreferrer">
-                  {event.socials[key]?.label ?? key}
-                  <span class="sr-only"> de {a.name} (abre em nova aba)</span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    ) : (
-      <span class="artist__tag" aria-hidden="true">
-        a anunciar
-      </span>
-    )
-  }
+          <Image class="ac__photo" src={a.photo} alt="" widths={[360, 720]} sizes="(max-width: 760px) 78vw, 30vw" loading="lazy" />
+        )
+      ) : (
+        <span class="ac__mono">{a.confirmed ? a.name.replace(/^Pr\.\s*/, '').charAt(0) : '?'}</span>
+      )
+    }
+    <span class="ac__arc"></span>
+  </div>
+
+  <div class="ac__body">
+    <p class="ac__cat">{a.category}</p>
+    <h3 class="ac__name">
+      {a.name}
+      {!a.confirmed && <span class="sr-only"> (atração ainda não anunciada)</span>}
+    </h3>
+    {a.description && <p class="ac__desc">{a.description}</p>}
+    {
+      socials.length > 0 && (
+        <ul role="list" class="ac__socials">
+          {socials.map(([key, url]) => (
+            <li>
+              <a href={url} target="_blank" rel="noopener noreferrer">
+                {event.socials[key]?.label ?? key}
+                <span class="sr-only"> de {a.name} (abre em nova aba)</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+    <p class="ac__sign" aria-hidden="true">{event.eventYear}© {event.organizer}</p>
+  </div>
 </article>
 
 <style>
-  .artist {
+  .ac {
+    --bg: linear-gradient(170deg, #ff0050, #e94e5e);
     position: relative;
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    outline-offset: 0.1em;
-  }
-
-  .artist__name {
-    font-size: 1em;
-    font-weight: 900;
-    line-height: 0.92;
-    letter-spacing: -0.005em;
-    white-space: nowrap;
+    isolation: isolate;
+    container-type: inline-size;
+    display: grid;
+    grid-template-rows: 1fr;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: 22px;
+    background: var(--bg);
+    color: var(--color-text);
+    box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.45);
+    rotate: calc((var(--n) - 1.5) * 1.4deg);
     transition:
-      color var(--dur) var(--ease-out),
-      -webkit-text-stroke-color var(--dur) var(--ease-out);
+      rotate var(--dur) var(--ease-back),
+      transform var(--dur) var(--ease-back);
   }
 
-  .artist--tbd .artist__name {
-    color: transparent;
-    -webkit-text-stroke: max(1px, 0.012em) rgb(246 243 238 / 0.55);
+  .ac--pink {
+    --bg: linear-gradient(170deg, #ff0050 0%, #e94e5e 100%);
   }
-
-  .artist__tag {
-    position: absolute;
-    top: -0.2em;
-    right: -0.45em;
-    padding: 0.35em 0.6em;
-    font-family: var(--font-body);
-    font-size: clamp(0.5625rem, 0.5rem + 0.2vw, 0.75rem);
-    font-weight: 800;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--color-ink);
-    background: var(--color-accent);
-    rotate: 6deg;
-    transition: rotate var(--dur) var(--ease-out);
+  .ac--lavender {
+    --bg: linear-gradient(170deg, #8f7cf0 0%, #a393ed 100%);
+  }
+  .ac--teal {
+    --bg: linear-gradient(170deg, #1fa58f 0%, #68b09c 100%);
+  }
+  .ac--blue {
+    --bg: linear-gradient(170deg, #3e87e1 0%, #7a8ff0 100%);
+  }
+  .ac--orange {
+    --bg: linear-gradient(170deg, #fc973b 0%, #fa7959 100%);
+  }
+  .ac--coral {
+    --bg: linear-gradient(170deg, #fa7959 0%, #e94e5e 100%);
   }
 
   @media (hover: hover) {
-    .artist--tbd:hover .artist__name {
-      -webkit-text-stroke-color: var(--color-text);
-    }
-
-    .artist--tbd:hover .artist__tag {
-      rotate: -4deg;
+    .ac:hover {
+      rotate: 0deg;
+      transform: translateY(-10px) scale(1.02);
     }
   }
 
-  .artist__meta {
-    max-width: 22rem;
-    margin-top: 0.35rem;
-    font-family: var(--font-body);
-    font-size: var(--fs-caption);
-    line-height: 1.4;
-    text-align: center;
-    color: var(--color-muted);
+  .ac:focus-within {
+    rotate: 0deg;
   }
 
-  .artist__meta strong {
-    color: var(--color-accent);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-  }
-
-  .artist__socials {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 0.35rem;
-  }
-
-  .artist__socials a {
-    font-weight: 700;
-    color: var(--color-text);
-  }
-
-  /* Foto: aparece no hover/foco, ancorada acima do nome */
-  .artist__photo {
+  /* ---------- Arte (camadas do post) ---------------------------------- */
+  .ac__art {
     position: absolute;
-    bottom: 80%;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .ac__palm {
+    position: absolute;
+    top: -4%;
+    height: 80%;
+    aspect-ratio: 440 / 1006;
+    background: var(--brand-purple);
+    opacity: 0.75;
+    -webkit-mask: var(--m) center / contain no-repeat;
+    mask: var(--m) center / contain no-repeat;
+  }
+
+  .ac__palm--l {
+    --m: url('/brand/palm-left.svg');
+    left: -14%;
+  }
+
+  .ac__palm--r {
+    --m: url('/brand/palm-right.svg');
+    right: -16%;
+    top: 12%;
+  }
+
+  .ac__birds {
+    position: absolute;
+    right: 12%;
+    top: 30%;
+    width: 26%;
+    aspect-ratio: 270 / 165;
+    background: currentColor;
+    color: var(--brand-pink);
+    -webkit-mask: url('/brand/birds.svg') center / contain no-repeat;
+    mask: url('/brand/birds.svg') center / contain no-repeat;
+  }
+
+  .ac--pink .ac__birds,
+  .ac--coral .ac__birds {
+    color: #ffd0dc;
+  }
+
+  .ac__photo {
+    position: absolute;
     left: 50%;
-    z-index: 5;
-    width: clamp(10rem, 18vw, 18rem);
-    aspect-ratio: 4 / 5;
-    overflow: hidden;
-    pointer-events: none;
-    opacity: 0;
-    transform: translate(-50%, 1rem) rotate(-4deg) scale(0.9);
-    transition:
-      opacity var(--dur) var(--ease-out),
-      transform var(--dur) var(--ease-out);
-    box-shadow: 0 30px 80px rgb(0 0 0 / 0.6);
-  }
-
-  .artist__photo :global(img) {
-    width: 100%;
-    height: 100%;
+    bottom: 18%;
+    width: 86%;
+    height: 82%;
     object-fit: cover;
+    object-position: 50% 20%;
+    translate: -50% 0;
+    transition: transform var(--dur-slow) var(--ease-out);
   }
 
-  .artist:hover .artist__photo,
-  .artist:focus-visible .artist__photo {
-    opacity: 1;
-    transform: translate(-50%, 0) rotate(-4deg);
+  @media (hover: hover) {
+    .ac:hover .ac__photo {
+      transform: scale(1.04);
+    }
   }
 
-  .artist:not(.artist--tbd):hover .artist__name {
-    background: var(--gradient-virada);
-    -webkit-background-clip: text;
-    background-clip: text;
+  /* Monograma quando ainda não há foto */
+  .ac__mono {
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    translate: -50% -50%;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 900;
+    font-size: 70cqi;
+    line-height: 1;
+    color: rgb(255 255 255 / 0.22);
+  }
+
+  /* O arco azul dos posts, onde o nome se apoia */
+  .ac__arc {
+    position: absolute;
+    left: -20%;
+    right: -20%;
+    bottom: -38%;
+    height: 72%;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #3e87e1 0%, #5b7be8 60%, #a393ed 100%);
+  }
+
+  .ac--blue .ac__arc {
+    background: linear-gradient(180deg, #2e6fc6 0%, #3e87e1 100%);
+  }
+
+  /* ---------- Texto ---------------------------------------------------- */
+  .ac__body {
+    display: grid;
+    align-content: end;
+    justify-items: center;
+    gap: 0.25rem;
+    padding: 6cqi 6cqi 4.5cqi;
+    text-align: center;
+  }
+
+  .ac__cat {
+    position: absolute;
+    top: 5cqi;
+    left: 5cqi;
+    padding: 0.35em 0.8em;
+    font-size: max(0.6875rem, 3.6cqi);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    background: rgb(33 15 40 / 0.35);
+  }
+
+  .ac__name {
+    font-size: 15cqi;
+    line-height: 0.86;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+    text-shadow: 0 4px 18px rgb(33 15 40 / 0.25);
+  }
+
+  .ac--long .ac__name {
+    font-size: 11.5cqi;
+  }
+
+  .ac__desc {
+    max-width: 90%;
+    font-size: 0.875rem;
+  }
+
+  .ac__socials {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+
+  .ac__sign {
+    margin-top: 0.6rem;
+    font-size: max(0.625rem, 2.8cqi);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    opacity: 0.9;
+  }
+
+  /* ---------- Placeholder -------------------------------------------- */
+  .ac--tbd .ac__name {
     color: transparent;
+    -webkit-text-stroke: 1.5px #fff;
   }
 
-  @media (max-width: 640px) {
-    .artist--tbd {
-      flex-direction: row;
-      align-items: center;
-      gap: 0.6rem;
-    }
+  .ac--tbd .ac__mono {
+    color: rgb(255 255 255 / 0.85);
+    font-size: 60cqi;
+    animation: wobble 2.4s var(--ease-in-out) infinite alternate;
+  }
 
-    .artist__tag {
-      position: static;
-      rotate: none;
-      padding: 0.3em 0.5em;
+  @keyframes wobble {
+    from {
+      rotate: -8deg;
+    }
+    to {
+      rotate: 8deg;
     }
   }
 
-  @media (hover: none), (max-width: 760px) {
-    .artist {
-      flex-direction: row;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.3em;
-    }
-
-    .artist__photo {
-      position: static;
-      width: 0.9em;
-      height: 0.9em;
-      border-radius: 50%;
-      opacity: 1;
-      transform: none;
-      box-shadow: none;
-    }
-
-    .artist__meta {
-      flex-basis: 100%;
-      text-align: left;
-    }
-
-    .artist__socials {
-      justify-content: flex-start;
+  @media (prefers-reduced-motion: reduce) {
+    .ac--tbd .ac__mono {
+      animation: none;
     }
   }
 </style>

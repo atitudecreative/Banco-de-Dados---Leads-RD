@@ -15,7 +15,7 @@ const navLinks = [
 <header class="nav" data-nav>
   <div class="nav__inner">
     <a class="nav__brand" href="#topo" aria-label={`${event.eventName} ${event.eventYear} — voltar ao topo`}>
-      <Logo />
+      <Logo height={44} priority />
     </a>
 
     <nav class="nav__links" aria-label="Principal">
@@ -46,7 +46,7 @@ const navLinks = [
 <dialog class="menu" id="menu" aria-label="Menu" data-menu>
   <div class="menu__bg" aria-hidden="true"></div>
   <div class="menu__top">
-    <Logo />
+    <Logo height={44} />
     <button class="menu__close" type="button" data-menu-close>
       <span>Fechar</span>
       <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.4"></path></svg>
@@ -93,12 +93,18 @@ const navLinks = [
 </dialog>
 
 <style>
+  /* No topo, a nav fica dentro da moldura roxa do hero; ao rolar, solta-se */
   .nav {
     position: fixed;
-    inset: 0 0 auto;
+    top: var(--frame);
+    left: var(--frame);
+    right: var(--frame);
     z-index: var(--z-nav);
     height: var(--nav-h);
     transition:
+      top var(--dur) var(--ease-out),
+      left var(--dur) var(--ease-out),
+      right var(--dur) var(--ease-out),
       background-color var(--dur) var(--ease-out),
       transform var(--dur) var(--ease-out),
       backdrop-filter var(--dur) var(--ease-out);
@@ -116,7 +122,10 @@ const navLinks = [
   }
 
   :global(.nav.is-scrolled) {
-    background: rgb(7 6 12 / 0.72);
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgb(33 15 40 / 0.78);
     backdrop-filter: blur(14px) saturate(1.4);
     -webkit-backdrop-filter: blur(14px) saturate(1.4);
   }
@@ -176,6 +185,11 @@ const navLinks = [
 
   .nav__links a:hover,
   .nav__links a[aria-current='true'] {
+    color: var(--color-text);
+  }
+
+  /* Sobre o rosa do hero, os links precisam de contraste total */
+  :global(.nav:not(.is-scrolled)) .nav__links a {
     color: var(--color-text);
   }
 
@@ -291,9 +305,8 @@ const navLinks = [
     inset: 0;
     z-index: -1;
     background:
-      radial-gradient(80% 50% at 100% 0%, rgb(255 46 136 / 0.35), transparent 70%),
-      radial-gradient(70% 50% at 0% 100%, rgb(59 43 255 / 0.4), transparent 70%),
-      var(--color-background);
+      radial-gradient(60% 40% at 100% 100%, rgb(252 151 59 / 0.6), transparent 70%),
+      var(--gradient-kv);
     clip-path: circle(0% at calc(100% - 3rem) 2rem);
     transition: clip-path 700ms var(--ease-in-out);
   }
@@ -347,14 +360,16 @@ const navLinks = [
   .menu__num {
     font-size: var(--fs-caption);
     font-weight: 700;
-    color: var(--color-accent);
+    color: var(--color-text);
     letter-spacing: 0.1em;
   }
 
   .menu__label {
     font-family: var(--font-display);
-    font-size: clamp(3rem, 15vw, 6rem);
+    font-style: italic;
+    font-size: clamp(2.6rem, 12.5vw, 5.5rem);
     font-weight: 900;
+    letter-spacing: -0.02em;
     line-height: 0.95;
     text-transform: uppercase;
     transition: transform var(--dur) var(--ease-out);
@@ -362,11 +377,8 @@ const navLinks = [
 
   .menu__nav a:hover .menu__label,
   .menu__nav a:focus-visible .menu__label {
-    background: var(--gradient-virada);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    transform: translateX(0.5rem);
+    color: var(--brand-purple);
+    transform: translateX(0.5rem) rotate(-3deg);
   }
 
   .menu__nav li,
@@ -411,13 +423,14 @@ const navLinks = [
     display: flex;
     justify-content: space-between;
     font-family: var(--font-display);
+    font-style: italic;
     font-size: 1.5rem;
     font-weight: 800;
     text-transform: uppercase;
   }
 
   .menu__meta strong {
-    color: var(--color-accent);
+    color: var(--color-text);
   }
 
   .menu__socials {

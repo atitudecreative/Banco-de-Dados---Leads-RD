@@ -2,16 +2,19 @@
 import Button from '@/components/ui/Button.astro';
 import { primaryHref, primaryIsExternal } from '@/config/event';
 
-// Declaração principal: cada palavra "acende" conforme o scroll.
-const statement = 'Tem gente que vira o ano olhando pro céu. A gente vira o ano olhando pra Deus.';
-const highlight = new Set(['céu.', 'Deus.']);
+// Declaração principal (conceito oficial da marca): cada palavra "acende"
+// conforme o scroll.
+const statement = 'Na virada do ano, a gente não muda só a data. A gente vira a página.';
+const highlight = new Set(['vira', 'a', 'página.']);
 const words = statement.split(' ');
+// destaca apenas o trecho final "vira a página."
+const hlFrom = words.length - 3;
 
 const manifesto = [
-  'Uma noite pra agradecer pelo que passou.',
-  'Pra entregar nas mãos de Deus o que vem.',
-  'Pra cantar junto com milhares de vozes.',
-  'E começar o ano novo de pé — em adoração.',
+  'Virar é mudança.',
+  'Virar é movimento.',
+  'Virar é encerrar um ciclo e abrir espaço pra uma nova história.',
+  'E a gente vira o ano junto, na presença de Deus.',
 ];
 ---
 
@@ -20,8 +23,8 @@ const manifesto = [
     <p class="kicker" data-reveal="fade">O que é o MaraVira</p>
     <h2 id="evento-title" class="statement">
       {
-        words.map((w) => (
-          <span class:list={['w', { 'w--hl': highlight.has(w) }]}>{w} </span>
+        words.map((w, i) => (
+          <span class:list={['w', { 'w--hl': i >= hlFrom && highlight.has(w) }]}>{w} </span>
         ))
       }
     </h2>
@@ -45,14 +48,14 @@ const manifesto = [
       <div class="name__part" data-reveal>
         <p class="name__word name__word--mara" aria-hidden="true">Mara</p>
         <p class="name__def">
-          <strong>Mara</strong>, de Maracanã. De maravilha. Do Rio, a Cidade Maravilhosa.
+          <strong>Mara</strong>, de maravilhosa. Do Rio de Janeiro, a Cidade Maravilhosa.
         </p>
       </div>
       <span class="name__op" aria-hidden="true">+</span>
       <div class="name__part" data-reveal style="--i:1">
         <p class="name__word name__word--vira" aria-hidden="true">Vira</p>
         <p class="name__def">
-          <strong>Vira</strong>, de virada. De virar a página. De vida que vira.
+          <strong>Vira</strong>, de virada. De mudança, movimento e um novo começo.
         </p>
       </div>
     </div>
@@ -61,7 +64,7 @@ const manifesto = [
       <p>
         <span class="name__eq" aria-hidden="true">=</span>
         <strong class="text-gradient">MaraVira.</strong>
-        <span>O Réveillon cristão do Rio de Janeiro.</span>
+        <span>A Virada Maravilhosa. O Réveillon cristão do Rio.</span>
       </p>
       <Button href={primaryHref} external={primaryIsExternal} data-track="cta-manifesto">Quero ir</Button>
     </div>
@@ -71,24 +74,20 @@ const manifesto = [
 <style>
   .manifesto {
     background:
-      radial-gradient(50% 40% at 85% 10%, rgb(255 46 136 / 0.14), transparent 70%),
+      radial-gradient(50% 40% at 85% 10%, rgb(255 0 86 / 0.14), transparent 70%),
       var(--color-background);
   }
 
   /* ---------- Declaração ------------------------------------------------ */
   .statement {
-    max-width: 16ch;
+    max-width: 17ch;
     margin-top: 1.5rem;
-    font-size: clamp(2.75rem, 8.2vw, 8rem);
-    font-weight: 900;
-    line-height: 0.92;
+    font-size: clamp(2.5rem, 7vw, 6.75rem);
+    line-height: 0.95;
   }
 
   .w--hl {
-    background: var(--gradient-virada);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: var(--brand-orange);
   }
 
   /* Palavra a palavra acende com o scroll (Chrome/Edge/Safari 26+).
@@ -139,9 +138,10 @@ const manifesto = [
 
   .lines__text {
     font-family: var(--font-display);
+    font-style: italic;
     font-size: var(--fs-h3);
-    font-weight: 800;
-    line-height: 1;
+    font-weight: 900;
+    line-height: 1.02;
     text-transform: uppercase;
   }
 
@@ -155,9 +155,11 @@ const manifesto = [
 
   .name__word {
     font-family: var(--font-display);
-    font-size: clamp(5rem, 17vw, 16rem);
+    font-style: italic;
+    font-size: clamp(4.5rem, 14vw, 13rem);
     font-weight: 900;
-    line-height: 0.8;
+    line-height: 0.85;
+    letter-spacing: -0.03em;
     text-transform: uppercase;
   }
 
@@ -167,6 +169,7 @@ const manifesto = [
   }
 
   .name__word--vira {
+    rotate: var(--tilt);
     background: var(--gradient-virada);
     -webkit-background-clip: text;
     background-clip: text;
@@ -191,7 +194,7 @@ const manifesto = [
     font-size: clamp(3rem, 8vw, 7rem);
     font-weight: 300;
     line-height: 1;
-    color: var(--color-accent);
+    color: var(--brand-cyan);
   }
 
   .name__op {
@@ -215,6 +218,7 @@ const manifesto = [
     align-items: baseline;
     gap: 0.25rem 1.25rem;
     font-family: var(--font-display);
+    font-style: italic;
     font-size: clamp(2rem, 4.5vw, 4rem);
     font-weight: 900;
     line-height: 1;

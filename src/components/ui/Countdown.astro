@@ -68,10 +68,10 @@ const units = [
 
 <style>
   .cd {
-    --fs: clamp(3rem, 10vw, 9.5rem);
-    --tile: #120f1f;
-    --tile-2: #1b1730;
-    --digit: var(--color-text);
+    --fs: clamp(3rem, 9.4vw, 9rem);
+    --tile: #ffffff;
+    --tile-2: #f6f0fa;
+    --digit: var(--brand-purple);
     position: relative;
     font-family: var(--font-display);
   }
@@ -99,16 +99,16 @@ const units = [
   }
 
   .cd__unit--days .flap {
-    --digit: var(--color-accent);
+    --digit: var(--brand-pink);
   }
 
   .cd__label {
     font-family: var(--font-body);
     font-size: clamp(0.6875rem, 0.6rem + 0.3vw, 0.875rem);
-    font-weight: 800;
+    font-weight: 600;
     letter-spacing: 0.24em;
     text-transform: uppercase;
-    color: var(--color-muted);
+    color: var(--color-text);
   }
 
   .cd__sep {
@@ -122,8 +122,9 @@ const units = [
   .cd__sep i {
     width: calc(var(--fs) * 0.07);
     height: calc(var(--fs) * 0.07);
-    background: var(--color-primary);
-    box-shadow: 0 0 14px var(--color-primary);
+    border-radius: 50%;
+    background: var(--brand-cyan);
+    box-shadow: 0 0 14px var(--brand-cyan);
     animation: blink 1s steps(1) infinite;
   }
 
@@ -140,7 +141,9 @@ const units = [
     width: calc(var(--fs) * 0.68);
     height: var(--fs);
     font-size: var(--fs);
+    font-style: italic;
     font-weight: 900;
+    font-stretch: 80%;
     line-height: 1;
     color: var(--digit);
     perspective: calc(var(--fs) * 4);
@@ -168,15 +171,16 @@ const units = [
   .flap__top {
     top: 0;
     align-items: flex-start;
-    border-radius: 6px 6px 0 0;
-    border-bottom: 1px solid rgb(0 0 0 / 0.55);
+    border-radius: 10px 10px 0 0;
+    border-bottom: 1px solid rgb(102 58 107 / 0.25);
   }
 
   .flap__bottom {
     bottom: 0;
     align-items: flex-end;
-    border-radius: 0 0 6px 6px;
-    background: linear-gradient(var(--tile), #0c0a16);
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 10px 24px rgb(0 0 0 / 0.25);
+    background: linear-gradient(var(--tile-2), #e8dcf0);
   }
 
   /* "Dobradiça" luminosa do placar */
@@ -186,9 +190,9 @@ const units = [
     left: -2px;
     right: -2px;
     top: 50%;
-    height: 2px;
+    height: 3px;
     translate: 0 -50%;
-    background: var(--color-background);
+    background: var(--brand-purple);
     z-index: 4;
   }
 
@@ -212,6 +216,7 @@ const units = [
 
   .cd__done-title {
     padding-top: 0.16em;
+    font-style: italic;
     font-size: calc(var(--fs) * 1.2);
     font-weight: 900;
     line-height: 0.85;
@@ -226,6 +231,7 @@ const units = [
 
   .cd__done-sub {
     margin-top: 0.75rem;
+    font-style: italic;
     font-size: calc(var(--fs) * 0.35);
     font-weight: 800;
     text-transform: uppercase;

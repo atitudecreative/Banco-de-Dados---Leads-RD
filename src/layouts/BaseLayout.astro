@@ -1,9 +1,9 @@
 ---
-import '@fontsource-variable/big-shoulders-display';
-import '@fontsource-variable/manrope';
+import '@fontsource-variable/archivo/standard-italic.css';
+import '@fontsource-variable/rubik';
 import '@/styles/global.css';
-import displayFont from '@fontsource-variable/big-shoulders-display/files/big-shoulders-display-latin-wght-normal.woff2?url';
-import bodyFont from '@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2?url';
+import displayFont from '@fontsource-variable/archivo/files/archivo-latin-standard-italic.woff2?url';
+import bodyFont from '@fontsource-variable/rubik/files/rubik-latin-wght-normal.woff2?url';
 import { event, countdownTarget, dateParts } from '@/config/event';
 
 interface Props {
@@ -66,7 +66,7 @@ const schema = {
     ? {
         performer: event.artists
           .filter((a) => a.confirmed)
-          .map((a) => ({ '@type': 'PerformingGroup', name: a.name })),
+          .map((a) => ({ '@type': a.category === 'Palavra' ? 'Person' : 'PerformingGroup', name: a.name })),
       }
     : {}),
 };
@@ -86,7 +86,7 @@ const schema = {
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, follow" />}
 
-    <meta name="theme-color" content="#07060c" />
+    <meta name="theme-color" content="#ff0056" />
     <meta name="color-scheme" content="dark" />
     <meta name="format-detection" content="telephone=no" />
 

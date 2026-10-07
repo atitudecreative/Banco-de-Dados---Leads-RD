@@ -1,90 +1,37 @@
 ---
 /**
- * Marca MaraVira.
- * Símbolo: o anel oval (planta de estádio / Maracanã) que "vira" — uma
- * elipse aberta com seta de rotação. Ao centro, o ponto de luz da meia-noite.
+ * Logotipo oficial "Rio MaraVira 27" (arquivos em public/brand/).
+ * - compact: sem "2ª Edição / A Virada Maravilhosa" (nav, menu, selos)
+ * - lockup: assinatura completa (rodapé)
+ * O nome acessível vem do link que envolve o logo (ou de `alt`).
  */
 interface Props {
-  /** "inline" = MARAVIRA em uma linha; "symbol" = só o símbolo. */
-  variant?: 'inline' | 'symbol';
+  variant?: 'compact' | 'lockup';
+  /** Altura em px (a largura segue a proporção do logo). */
+  height?: number;
+  alt?: string;
   class?: string;
-  /** Mostra o ano ao lado. */
-  year?: boolean;
+  /** Logo acima da dobra (nav): baixa com prioridade alta. */
+  priority?: boolean;
 }
-import { event } from '@/config/event';
-const { variant = 'inline', class: cls = '', year = false } = Astro.props;
-const gid = `lg-${Math.random().toString(36).slice(2, 8)}`;
+const { variant = 'compact', height = 40, alt = '', class: cls, priority = false } = Astro.props;
+const src = variant === 'lockup' ? '/brand/maravira27-lockup.svg' : '/brand/maravira27-logo.svg';
+const ratio = variant === 'lockup' ? 1360 / 785 : 1345 / 775;
 ---
 
-<span class:list={['logo', `logo--${variant}`, cls]}>
-  <svg class="logo__mark" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
-    <defs>
-      <linearGradient id={gid} x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#3b2bff"></stop>
-        <stop offset=".5" stop-color="#ff2e88"></stop>
-        <stop offset="1" stop-color="#ffb23f"></stop>
-      </linearGradient>
-    </defs>
-    <path
-      d="M40.8 15.2A20 13 0 1 0 43 27"
-      fill="none"
-      stroke={`url(#${gid})`}
-      stroke-width="5"
-      stroke-linecap="round"
-      transform="rotate(-18 24 24)"></path>
-    <path d="M44.6 8.6 46 20.4 35 16.6Z" fill="#ffb23f" transform="rotate(-18 24 24)"></path>
-    <circle cx="24" cy="24" r="4.2" fill="#f6f3ee"></circle>
-  </svg>
-  {
-    variant === 'inline' && (
-      <span class="logo__word">
-        Mara<span class="logo__vira">Vira</span>
-        {year && <span class="logo__year">{event.eventYear}</span>}
-      </span>
-    )
-  }
-</span>
+<img class:list={['logo', cls]} src={src} alt={alt} width={Math.round(height * ratio)} height={height} style={`width:${Math.round(height * ratio)}px;height:${height}px`} decoding="async" fetchpriority={priority ? 'high' : undefined} loading={priority ? undefined : 'lazy'} />
 
 <style>
   .logo {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--color-text);
-    line-height: 1;
+    display: block;
+    width: auto;
+    max-width: none;
+    aspect-ratio: auto;
+    transition: transform var(--dur) var(--ease-back);
   }
 
-  .logo__mark {
-    width: 2.1em;
-    height: 2.1em;
-    flex: none;
-    transition: transform var(--dur-slow) var(--ease-out);
-  }
-
-  :global(a:hover) > .logo .logo__mark,
-  :global(a:focus-visible) > .logo .logo__mark {
-    transform: rotate(-200deg);
-  }
-
-  .logo__word {
-    font-family: var(--font-display);
-    font-weight: 900;
-    font-size: 1.6em;
-    letter-spacing: 0.01em;
-    text-transform: uppercase;
-  }
-
-  .logo__vira {
-    background: var(--gradient-virada);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-
-  .logo__year {
-    margin-left: 0.3em;
-    font-weight: 600;
-    color: var(--color-muted);
-    -webkit-text-fill-color: var(--color-muted);
+  :global(a:hover) > .logo,
+  :global(a:focus-visible) > .logo {
+    transform: rotate(-3deg) scale(1.04);
   }
 </style>

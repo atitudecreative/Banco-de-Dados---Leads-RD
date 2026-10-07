@@ -54,15 +54,21 @@ const { items, variant = 'gradient', reverse = false, tilt = 0, speed = 38, clas
     margin-left: -2%;
     padding-block: clamp(0.7rem, 1.5vw, 1.1rem);
     font-family: var(--font-display);
-    font-size: clamp(1.75rem, 4vw, 3.5rem);
+    font-style: italic;
+    font-size: clamp(1.6rem, 3.6vw, 3.1rem);
     font-weight: 900;
+    letter-spacing: -0.01em;
     line-height: 1;
     text-transform: uppercase;
     white-space: nowrap;
   }
 
   .mq--gradient {
-    background: var(--gradient-virada);
+    background: var(--brand-orange);
+    color: var(--brand-purple);
+  }
+
+  .mq--gradient svg {
     color: var(--color-text);
   }
 
@@ -78,7 +84,7 @@ const { items, variant = 'gradient', reverse = false, tilt = 0, speed = 38, clas
   }
 
   .mq--outline svg {
-    color: var(--color-primary);
+    color: var(--brand-cyan);
   }
 
   .mq__track {

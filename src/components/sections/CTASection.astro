@@ -15,14 +15,16 @@ const firstSocial = socialList.find((s) => s.url);
 ---
 
 <section class="cta section" id="garanta" aria-labelledby="garanta-title">
-  <div class="cta__glow" aria-hidden="true"></div>
+  <div class="cta__glow" aria-hidden="true">
+    <span class="cta__palm"></span>
+  </div>
   <div class="container cta__grid">
     <div class="cta__copy">
       <p class="kicker" data-reveal="fade">{dateParts.long} · {event.city}</p>
       <h2 id="garanta-title" class="cta__title" data-reveal="mask">
         <span class="line"><span>Garanta</span></span>
         <span class="line" style="--l:1"><span>seu</span></span>
-        <span class="line" style="--l:2"><span class="text-gradient">lugar.</span></span>
+        <span class="line" style="--l:2"><span class="cta__hl">lugar.</span></span>
       </h2>
       <p class="cta__lead" data-reveal>
         {
@@ -118,9 +120,28 @@ const firstSocial = socialList.find((s) => s.url);
     inset: 0;
     z-index: -1;
     background:
-      radial-gradient(45% 55% at 15% 70%, rgb(59 43 255 / 0.45), transparent 70%),
-      radial-gradient(40% 50% at 60% 30%, rgb(255 46 136 / 0.35), transparent 70%),
-      radial-gradient(35% 45% at 95% 90%, rgb(255 178 63 / 0.3), transparent 70%);
+      radial-gradient(40% 50% at 85% 100%, rgb(252 151 59 / 0.7), transparent 70%),
+      var(--gradient-kv);
+  }
+
+  .cta__palm {
+    position: absolute;
+    left: -3%;
+    bottom: -4%;
+    height: 95%;
+    aspect-ratio: 440 / 1006;
+    background: var(--brand-purple);
+    -webkit-mask: url('/brand/palm-left.svg') center / contain no-repeat;
+    mask: url('/brand/palm-left.svg') center / contain no-repeat;
+    opacity: 0.85;
+  }
+
+  .cta :global(.kicker) {
+    color: var(--color-text);
+  }
+
+  .cta :global(.kicker)::before {
+    background: var(--color-text);
   }
 
   .cta__grid {
@@ -132,18 +153,24 @@ const firstSocial = socialList.find((s) => s.url);
 
   .cta__title {
     margin-top: 1.25rem;
-    font-size: clamp(4rem, 12vw, 11rem);
-    font-weight: 900;
-    line-height: 0.82;
+    font-size: clamp(3.5rem, 10vw, 9rem);
+    line-height: 0.86;
+    rotate: var(--tilt);
+    transform-origin: left center;
   }
 
   .cta__lead {
     max-width: 30rem;
     margin-top: 1.75rem;
-    font-size: var(--fs-lead);
-    line-height: 1.45;
+    font-size: max(1.25rem, var(--fs-lead));
+    font-weight: 600;
+    line-height: 1.4;
     color: var(--color-text);
-    opacity: 0.88;
+  }
+
+  /* "lugar." com sombra deslocada roxa, como um adesivo */
+  .cta__hl {
+    text-shadow: 0.07em 0.07em 0 var(--brand-purple);
   }
 
   .cta__panel :global(.btn) {
@@ -153,10 +180,9 @@ const firstSocial = socialList.find((s) => s.url);
   /* ---------- Formulário ---------------------------------------------- */
   .lead {
     padding: clamp(1.5rem, 3.5vw, 3rem);
-    background: rgb(16 14 26 / 0.75);
-    border: 1px solid var(--color-line);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background: var(--color-background);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 40px 80px -30px rgb(33 15 40 / 0.7);
   }
 
   .lead fieldset {
@@ -174,6 +200,7 @@ const firstSocial = socialList.find((s) => s.url);
   .lead__legend {
     margin-bottom: 0.5rem;
     font-family: var(--font-display);
+    font-style: italic;
     font-size: clamp(1.5rem, 2.4vw, 2rem);
     font-weight: 900;
     text-transform: uppercase;
@@ -189,7 +216,7 @@ const firstSocial = socialList.find((s) => s.url);
     height: 3.75rem;
     padding: 1.4rem 1rem 0.45rem;
     font-size: 1rem;
-    background: rgb(246 243 238 / 0.04);
+    background: rgb(255 255 255 / 0.04);
     border: 0;
     border-bottom: 2px solid var(--color-line);
     border-radius: var(--radius) var(--radius) 0 0;
@@ -199,13 +226,13 @@ const firstSocial = socialList.find((s) => s.url);
   }
 
   .field input:hover {
-    background: rgb(246 243 238 / 0.07);
+    background: rgb(255 255 255 / 0.07);
   }
 
   .field input:focus {
     outline: none;
     border-color: var(--color-accent);
-    background: rgb(246 243 238 / 0.08);
+    background: rgb(255 255 255 / 0.08);
   }
 
   .field input:focus-visible {

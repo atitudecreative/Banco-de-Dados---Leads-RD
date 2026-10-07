@@ -16,11 +16,12 @@ interface Spark {
   hue: number;
 }
 
+// Cores da identidade: branco, laranja-sol, ciano-pássaro, lavanda
 const COLORS = [
-  [255, 178, 63],
-  [255, 214, 140],
-  [255, 46, 136],
-  [246, 243, 238],
+  [255, 255, 255],
+  [252, 151, 59],
+  [0, 202, 254],
+  [255, 236, 200],
 ];
 
 function sparks(canvas: HTMLCanvasElement, hero: HTMLElement) {

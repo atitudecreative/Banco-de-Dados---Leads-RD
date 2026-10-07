@@ -118,7 +118,7 @@ const ring = video ? 'ASSISTA ✦ VÍDEO OFICIAL ✦ ASSISTA ✦ VÍDEO OFICIAL 
     z-index: -1;
     background:
       linear-gradient(to bottom, var(--color-background) 0%, transparent 30%, transparent 55%, var(--color-background) 100%),
-      linear-gradient(to right, rgb(7 6 12 / 0.75), transparent 65%);
+      linear-gradient(to right, rgb(33 15 40 / 0.75), transparent 65%);
   }
 
   .video__inner {
@@ -166,8 +166,9 @@ const ring = video ? 'ASSISTA ✦ VÍDEO OFICIAL ✦ ASSISTA ✦ VÍDEO OFICIAL 
     width: 52%;
     aspect-ratio: 1;
     border-radius: 50%;
-    background: var(--gradient-virada);
-    box-shadow: 0 0 60px rgb(255 46 136 / 0.55);
+    color: var(--brand-purple);
+    background: var(--brand-orange);
+    box-shadow: 0 0 60px rgb(252 151 59 / 0.55);
     transition: transform var(--dur) var(--ease-out);
   }
 
@@ -213,7 +214,7 @@ const ring = video ? 'ASSISTA ✦ VÍDEO OFICIAL ✦ ASSISTA ✦ VÍDEO OFICIAL 
   }
 
   .vmodal::backdrop {
-    background: rgb(7 6 12 / 0.92);
+    background: rgb(33 15 40 / 0.92);
     backdrop-filter: blur(8px);
   }
 

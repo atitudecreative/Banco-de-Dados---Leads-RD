@@ -24,10 +24,10 @@ const layers: { d: string; fill: string }[] = [];
 const phoneLights: { x: number; y: number; r: number; o: number }[] = [];
 
 const rows = [
-  { size: 20, y: H - 120, fill: '#1b1633', arms: 0.3 },
-  { size: 27, y: H - 82, fill: '#120f22', arms: 0.32 },
-  { size: 36, y: H - 44, fill: '#0b0915', arms: 0.26 },
-  { size: 48, y: H - 4, fill: '#07060c', arms: 0.14 },
+  { size: 20, y: H - 120, fill: '0.5', arms: 0.3 },
+  { size: 27, y: H - 82, fill: '0.68', arms: 0.32 },
+  { size: 36, y: H - 44, fill: '0.84', arms: 0.26 },
+  { size: 48, y: H - 4, fill: '1', arms: 0.14 },
 ];
 
 for (const row of rows) {
@@ -66,7 +66,7 @@ for (const row of rows) {
 ---
 
 <svg class={cls} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
-  {layers.map((l) => <path d={l.d} fill={l.fill} />)}
+  {layers.map((l) => <path d={l.d} fill="currentColor" fill-opacity={l.fill} />)}
   <g class="crowd-lights">
     {phoneLights.map((p, i) => <circle cx={p.x.toFixed(1)} cy={p.y.toFixed(1)} r={p.r.toFixed(1)} fill="#fff" opacity={p.o.toFixed(2)} style={`--d:${(i % 7) * 0.6}s`} />)}
   </g>

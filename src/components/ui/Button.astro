@@ -52,9 +52,10 @@ const linkProps = href
     min-height: 3.5rem;
     padding: 0.95rem 1.5rem 0.95rem 1.75rem;
     font-family: var(--font-display);
+    font-style: italic;
     font-size: var(--fs-button);
-    font-weight: 800;
-    letter-spacing: 0.08em;
+    font-weight: 900;
+    letter-spacing: 0.04em;
     line-height: 1;
     text-transform: uppercase;
     text-decoration: none;
@@ -85,15 +86,14 @@ const linkProps = href
     transition: transform var(--dur-slow) var(--ease-out), opacity var(--dur) var(--ease-out);
   }
 
+  /* Primário = laranja-sol da paleta: contraste alto sobre o rosa e a noite */
   .btn--primary {
-    color: var(--color-text);
+    color: var(--color-ink);
   }
 
   .btn--primary::before {
-    background: var(--gradient-virada);
-    background-size: 200% 100%;
-    background-position: 0% 50%;
-    transition: background-position var(--dur-slow) var(--ease-out);
+    background: var(--brand-orange);
+    box-shadow: inset 0 -4px 0 rgb(0 0 0 / 0.12);
   }
 
   .btn--primary::after {
@@ -110,7 +110,7 @@ const linkProps = href
   }
 
   .btn--light::after {
-    background: var(--gradient-virada);
+    background: var(--brand-orange);
     transform: translateX(-101%);
   }
 
@@ -150,7 +150,7 @@ const linkProps = href
     }
 
     .btn--light:hover {
-      color: var(--color-text);
+      color: var(--color-ink);
     }
 
     .btn:hover .btn__icon {
@@ -165,7 +165,7 @@ const linkProps = href
   /* --- Focus (teclado): mesmo feedback do hover + anel --- */
   .btn:focus-visible {
     outline: none;
-    filter: drop-shadow(0 0 0 var(--color-accent)) drop-shadow(0 0 3px var(--color-accent)) drop-shadow(0 0 1px var(--color-accent));
+    filter: drop-shadow(0 0 0 #fff) drop-shadow(0 0 3px #fff) drop-shadow(0 0 1px #fff);
   }
 
   .btn--primary:focus-visible {
@@ -178,7 +178,7 @@ const linkProps = href
   }
 
   .btn--light:focus-visible {
-    color: var(--color-text);
+    color: var(--color-ink);
   }
 
   .btn--ghost:focus-visible {

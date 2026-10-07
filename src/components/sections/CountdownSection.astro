@@ -4,18 +4,17 @@ import Button from '@/components/ui/Button.astro';
 import { event, dateParts, primaryHref, primaryIsExternal } from '@/config/event';
 ---
 
-<section class="placar section" id="placar" aria-labelledby="placar-title">
-  <div class="placar__leds" aria-hidden="true"></div>
+<section class="placar section calcadao" id="placar" aria-labelledby="placar-title">
   <div class="container placar__inner">
     <header class="placar__head">
       <p class="kicker" data-reveal="fade">O placar da virada</p>
-      <h2 id="placar-title" class="placar__title" data-reveal="mask">
+      <h2 id="placar-title" class="placar__title tilt" data-reveal="mask">
         <span class="line"><span>Está</span></span>
         <span class="line" style="--l:1"><span class="text-gradient">chegando.</span></span>
       </h2>
     </header>
 
-    <div data-reveal="scale">
+    <div class="placar__board" data-reveal="scale">
       <Countdown />
     </div>
 
@@ -33,18 +32,13 @@ import { event, dateParts, primaryHref, primaryIsExternal } from '@/config/event
   .placar {
     overflow: hidden;
     background:
-      radial-gradient(60% 70% at 50% 50%, rgb(59 43 255 / 0.18), transparent 70%),
+      radial-gradient(55% 60% at 50% 55%, rgb(255 0 86 / 0.35), transparent 70%),
       var(--color-background);
   }
 
-  /* Matriz de LEDs do telão — textura sutil */
-  .placar__leds {
-    position: absolute;
-    inset: 0;
-    background-image: radial-gradient(circle, rgb(246 243 238 / 0.09) 1px, transparent 1.6px);
-    background-size: 9px 9px;
-    mask-image: radial-gradient(70% 65% at 50% 50%, #000 30%, transparent 75%);
-    -webkit-mask-image: radial-gradient(70% 65% at 50% 50%, #000 30%, transparent 75%);
+  /* O placar inteiro levemente inclinado, como o logotipo */
+  .placar__board {
+    rotate: -2.5deg;
   }
 
   .placar__inner {
@@ -90,8 +84,9 @@ import { event, dateParts, primaryHref, primaryIsExternal } from '@/config/event
     flex-wrap: wrap;
     gap: 0.25rem 1.25rem;
     font-family: var(--font-display);
+    font-style: italic;
     font-size: clamp(1.4rem, 2.4vw, 2rem);
-    font-weight: 800;
+    font-weight: 900;
     text-transform: uppercase;
   }
 

@@ -24,6 +24,9 @@ const year = new Date().getFullYear();
 <footer class="footer">
   {
     !minimal && (
+      <div class="footer__kv">
+      <span class="footer__palm footer__palm--l" aria-hidden="true" />
+      <span class="footer__palm footer__palm--r" aria-hidden="true" />
       <div class="footer__final container">
         <p class="footer__eyebrow kicker" data-reveal="fade">
           Contagem regressiva · {dateParts.short}.{dateParts.year}
@@ -33,7 +36,7 @@ const year = new Date().getFullYear();
             <span>Essa virada</span>
           </span>
           <span class="line" style="--l:1">
-            <span class="text-gradient">vai ser diferente.</span>
+            <span class="footer__hl">vai ser diferente.</span>
           </span>
         </p>
         <p class="sr-only">Essa virada vai ser diferente.</p>
@@ -44,13 +47,14 @@ const year = new Date().getFullYear();
           </Button>
         </div>
       </div>
+      </div>
     )
   }
 
   <div class="footer__grid container">
     <div class="footer__brand">
       <a href="/" aria-label={`${event.eventName} ${event.eventYear} — início`}>
-        <Logo year />
+        <Logo variant="lockup" height={120} />
       </a>
       <p>Uma realização da <strong>{event.organizer}</strong>.</p>
       <p class="footer__tag">Réveillon cristão do {event.city}.</p>
@@ -117,33 +121,73 @@ const year = new Date().getFullYear();
     </ul>
   </div>
 
-  <div class="footer__word" aria-hidden="true">
-    <span>Mara</span><span class="text-gradient">Vira</span>
-  </div>
+
 </footer>
 
 <style>
   .footer {
     position: relative;
     overflow: hidden;
-    padding-top: var(--section-y);
-    background:
-      radial-gradient(60% 40% at 50% 100%, rgb(255 46 136 / 0.3), transparent 70%),
-      radial-gradient(40% 30% at 10% 100%, rgb(59 43 255 / 0.35), transparent 70%),
-      var(--color-background);
-    border-top: 1px solid var(--color-line);
+    background: var(--brand-purple);
   }
 
-  /* ---------- CTA final ------------------------------------------------- */
+  /* ---------- CTA final: a peça-chave fecha a página -------------------- */
+  .footer__kv {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    margin: var(--frame) var(--frame) 0;
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(40% 55% at 70% 100%, rgb(252 151 59 / 0.75), transparent 70%),
+      var(--gradient-kv);
+  }
+
+  .footer__palm {
+    position: absolute;
+    top: 0;
+    z-index: -1;
+    height: 100%;
+    aspect-ratio: 440 / 1006;
+    background: var(--brand-purple);
+    -webkit-mask: var(--m) center / contain no-repeat;
+    mask: var(--m) center / contain no-repeat;
+  }
+
+  .footer__palm--l {
+    --m: url('/brand/palm-left.svg');
+    left: -2%;
+  }
+
+  .footer__palm--r {
+    --m: url('/brand/palm-right.svg');
+    right: -2%;
+  }
+
   .footer__final {
-    padding-bottom: var(--section-y);
+    padding-block: var(--section-y);
+  }
+
+  .footer__final :global(.kicker) {
+    color: var(--color-text);
+  }
+
+  .footer__final :global(.kicker)::before {
+    background: var(--color-text);
+  }
+
+  .footer__hl {
+    text-shadow: 0.06em 0.06em 0 var(--brand-purple);
   }
 
   .footer__big {
     margin-block: 1.25rem clamp(2.5rem, 5vw, 4rem);
     font-family: var(--font-display);
+    font-style: italic;
     font-size: var(--fs-h1);
     font-weight: 900;
+    rotate: var(--tilt);
+    transform-origin: left center;
     line-height: 0.86;
     text-transform: uppercase;
   }
@@ -155,8 +199,8 @@ const year = new Date().getFullYear();
     justify-content: space-between;
     gap: 2rem;
     padding: clamp(1.5rem, 3vw, 2.5rem);
-    border: 1px solid var(--color-line);
-    background: rgb(16 14 26 / 0.6);
+    border-radius: var(--radius-lg);
+    background: var(--color-background);
   }
 
   .footer__cd :global(.cd__units) {
@@ -169,7 +213,6 @@ const year = new Date().getFullYear();
     grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr));
     gap: 2.5rem;
     padding-block: clamp(3rem, 6vw, 4.5rem);
-    border-top: 1px solid var(--color-line);
   }
 
   .footer__brand {
@@ -191,8 +234,9 @@ const year = new Date().getFullYear();
 
   .footer__tag {
     font-family: var(--font-display);
+    font-style: italic;
     font-size: 1.5rem;
-    font-weight: 800;
+    font-weight: 900;
     line-height: 1;
     text-transform: uppercase;
     color: var(--color-text);
@@ -204,7 +248,7 @@ const year = new Date().getFullYear();
     font-size: var(--fs-caption);
     font-weight: 800;
     letter-spacing: var(--tracking-caps);
-    color: var(--color-accent);
+    color: var(--brand-cyan);
   }
 
   .footer__col ul {
@@ -245,19 +289,7 @@ const year = new Date().getFullYear();
     color: var(--color-text);
   }
 
-  .footer__word {
-    display: flex;
-    justify-content: center;
-    margin-bottom: -0.2em;
-    font-family: var(--font-display);
-    font-size: 25.5vw;
-    font-weight: 900;
-    line-height: 0.8;
-    text-transform: uppercase;
-    white-space: nowrap;
-    user-select: none;
-    color: rgb(246 243 238 / 0.06);
-  }
+
 
   @media (max-width: 900px) {
     .footer__grid {

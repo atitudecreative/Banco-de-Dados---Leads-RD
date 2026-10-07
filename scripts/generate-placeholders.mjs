@@ -12,12 +12,13 @@
 import sharp from 'sharp';
 import { mkdir } from 'node:fs/promises';
 
+// Paleta oficial MaraVira 27 (pôr do sol do Rio)
 const PALETTE = {
-  night: '#07060c',
-  indigo: '#3b2bff',
-  magenta: '#ff2e88',
-  gold: '#ffb23f',
-  cyan: '#3de1ff',
+  night: '#ff0056',
+  indigo: '#a393ed',
+  magenta: '#ff00a5',
+  gold: '#fc973b',
+  cyan: '#00cafe',
 };
 
 function rng(seed) {
@@ -36,7 +37,7 @@ function crowd(w, h, r, density = 1) {
     const baseY = h - (rows - row - 1) * h * 0.05;
     const size = (w / 38) * (1 + row * 0.35);
     const count = Math.ceil((w / size) * 1.1 * density);
-    const shade = ['#120f1d', '#0b0914', '#050409'][row];
+    const shade = ['#7a4580', '#663a6b', '#4a2650'][row];
     for (let i = 0; i < count; i++) {
       const x = (i / count) * w + (r() - 0.5) * size;
       const y = baseY - size * (1.6 + r() * 0.5);

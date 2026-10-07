@@ -1,11 +1,11 @@
 {
-  "name": "MaraVira 2027",
-  "short_name": "MaraVira",
+  "name": "MaraVira 27 — A Virada Maravilhosa",
+  "short_name": "MaraVira 27",
   "description": "Réveillon cristão do Rio de Janeiro — Igreja Batista Atitude.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#07060c",
-  "theme_color": "#07060c",
+  "background_color": "#ff0056",
+  "theme_color": "#ff0056",
   "lang": "pt-BR",
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },

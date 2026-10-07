@@ -1,6 +1,6 @@
-# MaraVira 2027 — site oficial
+# MaraVira 27 — site oficial
 
-Réveillon cristão do Rio de Janeiro · uma realização da **Igreja Batista Atitude**.
+**Rio MaraVira 27 · 2ª Edição · A Virada Maravilhosa** — Réveillon cristão do Rio de Janeiro, uma realização da **Igreja Batista Atitude**.
 
 Página única com cara de festival: hero cinematográfico, countdown em placar split-flap, manifesto, "noite em sete atos" com scroll horizontal, lineup em formato de cartaz, vídeo, galeria editorial, local, ingresso-resumo, lista de espera (RD Station), FAQ e redes.
 
@@ -11,7 +11,7 @@ Página única com cara de festival: hero cinematográfico, countdown em placar 
 | Framework | [Astro 5](https://astro.build) — HTML estático, zero JS por padrão |
 | Estilos | CSS puro com tokens (`src/styles/tokens.css`) + CSS com escopo por componente |
 | JS | TypeScript vanilla, ~12 KB no total, sem bibliotecas de animação |
-| Fontes | Big Shoulders Display (títulos) + Manrope (texto), self-hosted via Fontsource |
+| Fontes | Archivo itálico pesado (títulos) + Rubik (texto), self-hosted via Fontsource |
 | Imagens | `astro:assets` + sharp → WebP responsivo com `srcset`, lazy loading |
 
 ```bash
@@ -46,12 +46,12 @@ Campos vazios aparecem como **"A definir"**. Nenhuma informação oficial foi in
 
 ## Placeholders — checklist antes de publicar
 
-- [ ] **Confirmar a data.** O briefing define 31/12/2027. Se "MaraVira 2027" for a virada *para* 2027, o correto é `2026-12-31`.
+- [ ] **Confirmar a data.** Configurada como **31/12/2026** (virada 2026 → 2027), conforme a apresentação da identidade (2ª edição após a virada 2025 → 2026). O briefing escrito citava 31/12/2027 — se for essa, troque `eventDate`.
+- [ ] Confirmar o lineup: Morada, Maria Marçal, Fernandinho e Pr. Josué Valandro Jr. vieram dos posts oficiais de convidados. Faltam as fotos (cards já prontos para recebê-las)
 - [ ] Horário, local, endereço, preço, link de inscrição
 - [ ] Domínio final (`seo.siteUrl`, `astro.config.mjs`, `public/robots.txt`, `public/sitemap.xml`)
 - [ ] Token público do RD Station (`leads.rdPublicToken`)
 - [ ] URLs das redes sociais e do vídeo oficial
-- [ ] Artistas confirmados (fotos em `src/assets/artists/`, retrato 4:5)
 - [ ] Fotos reais da galeria — as atuais são **ilustrativas**, geradas por `npm run placeholders`. Substitua os arquivos em `src/assets/gallery/` e marque `isPlaceholder = false` em `Gallery.astro`
 - [ ] Imagem do local (`src/assets/venue/`) ou `venue.mapEmbedUrl`
 - [ ] Textos de [Privacidade](src/pages/privacidade.astro) e [Termos](src/pages/termos.astro) (jurídico/LGPD); depois remova o `noindex`
@@ -78,15 +78,19 @@ scripts/generate-placeholders.mjs   ← gera as imagens ilustrativas
 
 ## Identidade
 
-- **Conceito:** *da meia-noite ao primeiro raio de luz*. O gradiente da marca (índigo → magenta → ouro) é a própria virada em cor; na seção "sete atos" o céu literalmente amanhece com o scroll.
-- **Nome:** MARA (Maracanã, maravilha, Cidade Maravilhosa) + VIRA (virada, virar a página). No hero, as letras de VIRA giram ao entrar.
-- **Símbolo:** o anel oval de estádio com seta de rotação.
-- **Countdown:** placar split-flap de estádio — os dígitos *viram*.
-- **Paleta:** `--color-background #07060c` · `--color-primary #ff2e88` · `--color-secondary #3b2bff` · `--color-accent #ffb23f` · `--color-text #f6f3ee` · `--color-muted #a8a3b8`
+Baseada no manual **Rio MaraVira 27 — A Virada Maravilhosa**.
+
+- **Logotipo oficial** vetorizado a partir da peça-chave: `public/brand/maravira27-lockup.svg` (completo) e `maravira27-logo.svg` (compacto). No hero, o componente `LockupParts.astro` divide o logo em partes que se montam: o "Rio" se escreve, o MARA cai, o VIRA *vira* e o 27 salta.
+- **Elementos da peça-chave**: moldura roxa, céu rosa→magenta, palmeiras roxas (`palm-left/right.svg`), pássaros ciano (`birds.svg`) e o arco azul dos posts de convidados. Palmeiras e pássaros são aplicados por máscara CSS, então trocam de cor por CSS.
+- **Padrão "calçadão de Copacabana"** (classe `.calcadao`) como textura de fundo.
+- **Paleta oficial:** `#A393ED` lavanda · `#E94E5E` vermelho · `#3E87E1` azul · `#68B09C` verde-água · `#FA7959` coral · `#FC973B` laranja; da peça-chave: rosa `#FF0056`, magenta `#FF00A5`, roxo `#663A6B`, ciano `#00CAFE`.
+- **Papéis:** `--color-background #210F28` (noite roxa) · `--color-primary` rosa · `--color-secondary` azul · `--color-accent` laranja · `--color-text #FFF` · `--color-muted #D3C3DC`.
+- **Inclinação** (`--tilt`, `.tilt`): a mesma diagonal do logotipo aplicada em títulos-chave, no placar e nos cards.
+- **Lineup** no formato dos posts oficiais de convidados (cor por artista em `artists[].theme`).
 
 ## Performance e acessibilidade
 
-Lighthouse (build de produção, local): **desktop 100 / 100 / 100 / 100**, **mobile 99 / 100 / 100 / 100** (performance / acessibilidade / boas práticas / SEO). LCP 1,8 s em mobile simulado, CLS 0.
+Lighthouse (build de produção, local): **desktop 100 / 100 / 100 / 100**, **mobile 97 / 100 / 100 / 100** (performance / acessibilidade / boas práticas / SEO). CLS 0.
 
 - Animações só com `transform`/`opacity`; efeitos de scroll em CSS (`animation-timeline`) com degradação elegante
 - Canvas de faíscas e countdown pausam fora da tela e com a aba oculta
